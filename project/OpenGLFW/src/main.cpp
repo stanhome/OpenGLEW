@@ -3,12 +3,79 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+static const GLfloat s_vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f,
+};
+
+const char *SHADER_VERTEX = "#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}\0";
+
+const char *SHADER_FRAGMENT = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\0";
+
 void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 //void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
 
 void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+
+GLuint s_shaderProgram;
+void buildShaders()
+{
+	//.vertex shader
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &SHADER_VERTEX, NULL);
+	glCompileShader(vertexShader);
+
+	auto checkIsSuccessFunc = [](unsigned int shaderId, bool isSuccess, const char *title) -> void {
+		if (! isSuccess)
+		{
+			GLchar inforLog[512];
+			glGetShaderInfoLog(shaderId, 512, NULL, inforLog);
+			std::cout << "[E] " << title << " failed:\n" << inforLog << std::endl;
+		}
+	};
+
+	GLint isSuccess;
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isSuccess);
+	checkIsSuccessFunc(vertexShader, isSuccess, "vertex compilation");
+
+	// fragment shader
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &SHADER_FRAGMENT, NULL);
+	glCompileShader(fragmentShader);
+
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isSuccess);
+	checkIsSuccessFunc(fragmentShader, isSuccess, "fragment compilation");
+
+	// link shader program
+	s_shaderProgram = glCreateProgram();
+	glAttachShader(s_shaderProgram, vertexShader);
+	glAttachShader(s_shaderProgram, fragmentShader);
+	glLinkProgram(s_shaderProgram);
+
+	glGetProgramiv(s_shaderProgram, GL_LINK_STATUS, &isSuccess);
+	checkIsSuccessFunc(s_shaderProgram, isSuccess, "Shader program Link");
+
+	glUseProgram(s_shaderProgram);
+	//don't forget to delete the shader objects once we've linked them into the program object; we no longer need them anymore:
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
 }
 
 int main()
@@ -48,18 +115,60 @@ int main()
 
 	//glfwSetKeyCallback(window, keyCallback);
 
+	buildShaders();
+
+	// generate render object
+	unsigned int vbo;
+	glGenBuffers(1, &vbo);
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+
+	// 1. bind Vertex Array Object
+	glBindVertexArray(vao);
+	{
+		// 2. copy our vertices array in a buffer for OpenGL to use.
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		/*
+		The fourth parameter specifies how we want the graphics card to manage the given data.
+		GL_STREAM_DRAW: the data is set only once and used by the GPU at most a few times.
+		GL_STATIC_DRAW: the data is set only once and used many times.
+		GL_DYNAMIC_DRAW: the data is changed a lot and used many times.
+		*/
+		glBufferData(GL_ARRAY_BUFFER, sizeof(s_vertices), s_vertices, GL_STATIC_DRAW);
+
+		// 3. set the vertex attributes pointers.
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
+	}
+	// 4.  Unbind VAO  Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
+	glBindVertexArray(0);
+
+
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
 		//input
 		processInput(window);
 
 		//Rendering commands here
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		{
+			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
 
-		// check and call events and swap the buffers
-		glfwPollEvents();
-		glfwSwapBuffers(window);
+			// do Rendering
+			glUseProgram(s_shaderProgram);
+			glBindVertexArray(vao);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glBindVertexArray(0);
+		}
+		
+		{
+			// check and call events and swap the buffers
+			glfwPollEvents();
+			glfwSwapBuffers(window);
+		}
 	}
 
 	glfwTerminate();
