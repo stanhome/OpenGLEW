@@ -157,6 +157,10 @@ int main()
 	// 4.  Unbind VAO  Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)  remember: do NOT unbind the EBO, keep it bound to this VAO
 	glBindVertexArray(0);
 
+	// draw in wireframe mode.
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
