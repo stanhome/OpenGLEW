@@ -4,9 +4,15 @@
 #include <GLFW/glfw3.h>
 
 static const GLfloat s_vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f,
+	0.5f,  0.5f, 0.0f,  // top right
+	0.5f, -0.5f, 0.0f,  // bottom right
+	-0.5f, -0.5f, 0.0f,  // bottom left
+	-0.5f,  0.5f, 0.0f   // top left 
+};
+
+static const GLuint s_indices[] = {
+	0, 1, 3, // first triangle
+	1, 2, 3 // second triangle
 };
 
 const char *SHADER_VERTEX = "#version 330 core\n"
@@ -118,16 +124,18 @@ int main()
 	buildShaders();
 
 	// generate render object
-	unsigned int vbo;
-	glGenBuffers(1, &vbo);
-
-	GLuint vao;
+	// ebo: // element buffer object, or IBO index buffer object
+	GLuint vbo, ebo, vao;
 	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
+
 
 	// 1. bind Vertex Array Object
+	// bind the vertex array object first, then bind and set vertex buffers and attribute pointer
 	glBindVertexArray(vao);
 	{
-		// 2. copy our vertices array in a buffer for OpenGL to use.
+		// copy our vertices array in a buffer for OpenGL to use.
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		/*
 		The fourth parameter specifies how we want the graphics card to manage the given data.
@@ -137,13 +145,16 @@ int main()
 		*/
 		glBufferData(GL_ARRAY_BUFFER, sizeof(s_vertices), s_vertices, GL_STATIC_DRAW);
 
-		// 3. set the vertex attributes pointers.
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(s_indices), s_indices, GL_STATIC_DRAW);
+
+		//set the vertex attributes pointers.
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 		glEnableVertexAttribArray(0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
 	}
-	// 4.  Unbind VAO  Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
+	// 4.  Unbind VAO  Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)  remember: do NOT unbind the EBO, keep it bound to this VAO
 	glBindVertexArray(0);
 
 
@@ -160,7 +171,8 @@ int main()
 			// do Rendering
 			glUseProgram(s_shaderProgram);
 			glBindVertexArray(vao);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			//glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
 		
