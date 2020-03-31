@@ -22,6 +22,15 @@
     <Filter Include="header\glad">
       <UniqueIdentifier>{a520af08-e031-4855-ad00-a7a5ecf0d703}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\renderer">
+      <UniqueIdentifier>{33018159-0dd9-45f3-97a4-871453de9f83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\shaders">
+      <UniqueIdentifier>{64c4dc26-1899-4f03-8b8b-cd25c92f1c58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\shaders\01_shader">
+      <UniqueIdentifier>{5fb9b98e-302c-4199-ba51-9762a7166de9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -29,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="..\third-party\deps\glad.c">
       <Filter>src\deps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Shader.cpp">
+      <Filter>src\renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,5 +53,19 @@
     <ClInclude Include="..\third-party\include\GLFW\glfw3native.h">
       <Filter>header\GLFW</Filter>
     </ClInclude>
+    <ClInclude Include="src\renderer\Shader.h">
+      <Filter>src\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mainWrapper.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\01_started\basic.fs">
+      <Filter>res\shaders\01_shader</Filter>
+    </None>
+    <None Include="..\res\shaders\01_started\basic.vs">
+      <Filter>res\shaders\01_shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

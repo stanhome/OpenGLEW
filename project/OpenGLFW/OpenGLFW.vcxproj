@@ -21,11 +21,18 @@
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\renderer\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\include\glad\glad.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3native.h" />
+    <ClInclude Include="src\mainWrapper.h" />
+    <ClInclude Include="src\renderer\Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\01_started\basic.fs" />
+    <None Include="..\res\shaders\01_started\basic.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{173F0096-91E5-4C70-A5BF-19DA9C174C0B}</ProjectGuid>
@@ -93,6 +100,10 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)third-party\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+xcopy /Y /Q /S "$(SolutionDir)res\*.*" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -115,6 +126,10 @@
       <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)third-party\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+xcopy /Y /Q /S "$(SolutionDir)..\dll\*.*" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
