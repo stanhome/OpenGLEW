@@ -20,19 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\basicSample\main_04.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\include\glad\glad.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3native.h" />
+    <ClInclude Include="src\common\utils.h" />
     <ClInclude Include="src\mainWrapper.h" />
     <ClInclude Include="src\renderer\Shader.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\res\shaders\01_started\basic.fs" />
-    <None Include="..\res\shaders\01_started\basic.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{173F0096-91E5-4C70-A5BF-19DA9C174C0B}</ProjectGuid>
@@ -85,10 +82,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)third-party\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)OpenGLFW\src;$(SolutionDir)third-party\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)third-party\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)OpenGLFW\src;$(SolutionDir)third-party\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -101,8 +98,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)third-party\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
-xcopy /Y /Q /S "$(SolutionDir)res\*.*" "$(OutDir)"</Command>
+      <Command>if not exist "$(OutDir)res" mkdir "$(OutDir)res"
+xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -127,8 +124,8 @@ xcopy /Y /Q /S "$(SolutionDir)res\*.*" "$(OutDir)"</Command>
       <AdditionalLibraryDirectories>$(SolutionDir)third-party\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
-xcopy /Y /Q /S "$(SolutionDir)..\dll\*.*" "$(OutDir)"</Command>
+      <Command>if not exist "$(OutDir)res" mkdir "$(OutDir)res"
+xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

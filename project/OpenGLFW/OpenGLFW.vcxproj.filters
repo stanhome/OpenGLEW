@@ -28,19 +28,19 @@
     <Filter Include="res\shaders">
       <UniqueIdentifier>{64c4dc26-1899-4f03-8b8b-cd25c92f1c58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="res\shaders\01_shader">
-      <UniqueIdentifier>{5fb9b98e-302c-4199-ba51-9762a7166de9}</UniqueIdentifier>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{49c51144-26a0-46f8-b231-e2bc8bbfe9f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\third-party\deps\glad.c">
       <Filter>src\deps</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\Shader.cpp">
       <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\basicSample\main_04.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -59,13 +59,8 @@
     <ClInclude Include="src\mainWrapper.h">
       <Filter>src</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\res\shaders\01_started\basic.fs">
-      <Filter>res\shaders\01_shader</Filter>
-    </None>
-    <None Include="..\res\shaders\01_started\basic.vs">
-      <Filter>res\shaders\01_shader</Filter>
-    </None>
+    <ClInclude Include="src\common\utils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,19 +2,20 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <io.h> // for C
 
 #include "Shader.h"
+#include "common/utils.h"
 
 using namespace std;
-
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath)
 {
 	// 1. retrieve the vertex/fragment source code from filePath
-	const GLchar *vShaderCode = readShaderSrc(vertexPath).c_str();
-	const GLchar *fShaderCode = readShaderSrc(fragmentPath).c_str();
+	std::string vCode = readShaderSrc(getFullPath(vertexPath).c_str());
+	std::string fCode = readShaderSrc(getFullPath(fragmentPath).c_str());
 
-	init(vShaderCode, fShaderCode);
+	init(vCode.c_str(), fCode.c_str());
 }
 
 Shader::Shader(const GLchar *vertexCode, const GLchar *fragmentCode, bool isCode) {
@@ -29,7 +30,20 @@ void Shader::init(const GLchar *vShaderCode, const GLchar *fShaderCode)
 	auto checkIsSuccessFunc = [](GLuint shaderObjId, GLenum pname, const char *title) -> void {
 		// Print compile errors if any
 		GLint isSuccess;
-		glGetShaderiv(shaderObjId, pname, &isSuccess);
+
+		switch (pname)
+		{
+		case GL_COMPILE_STATUS:
+			glGetShaderiv(shaderObjId, pname, &isSuccess);
+			break;
+		case GL_LINK_STATUS:
+			glGetProgramiv(shaderObjId, pname, &isSuccess);
+			break;
+		default:
+			break;
+		}
+
+		
 		if (!isSuccess)
 		{
 			GLchar inforLog[512];
@@ -74,6 +88,13 @@ string Shader::readShaderSrc(const char *path) const
 	srcFile.exceptions(ifstream::badbit);
 	try
 	{
+		// 00 -- check file is exist.
+		if (_access(path, 0) == -1) {
+			cout << "[E] shader file not found, path:" << path << endl;
+
+			return ret;
+		}
+
 		// open file
 		srcFile.open(path);
 		stringstream fileStream;
