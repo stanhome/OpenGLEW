@@ -102,6 +102,16 @@ int main()
 			//glUseProgram(s_shaderProgram);
 			myShader.use();
 
+			//create transformations
+			glm::mat4 transform = glm::mat4(1.0);
+			transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+			transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+			// Get matrix's uniform location and set matrix
+			GLint transformLoc = glGetUniformLocation(myShader.id, "transform");
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+			// Draw container
 			glBindVertexArray(vao);
 			//glDrawArrays(GL_TRIANGLES, 0, 3);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -2,8 +2,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "renderer/Shader.h"
+// GLM Mathematics
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "renderer/Texture.h"
+#include "renderer/Shader.h"
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
