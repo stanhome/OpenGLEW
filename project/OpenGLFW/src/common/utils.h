@@ -17,7 +17,5 @@ std::string getFullPath(const char *path)
 	fullPath.append("/");
 	fullPath.append(path);
 
-	
-
 	return fullPath;
 }

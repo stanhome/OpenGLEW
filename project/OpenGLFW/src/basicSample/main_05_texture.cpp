@@ -101,6 +101,34 @@ int main()
 	}
 	stbi_image_free(data);
 
+	// texture2
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); //GLREPEAT also is default wrapping method
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load image, create texture and generate mipmaps
+	data = stbi_load("res/imgs/awesomeface.png", &width, &height, &channel, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		cout << "[E] Failed to load texture" << endl;
+	}
+	stbi_image_free(data);
+
+
+	// tell OpenGL for each sampler to which texture unit it belongs to (only has to be done onece)
+	myShader.use(); // don't forget to activate/use the shader before setting uniforms.
+	myShader.setInt("texture1", 0);
+	// or set it manually like so:
+	glUniform1i(glGetUniformLocation(myShader.id, "texture2"), 1);
 
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
@@ -114,8 +142,10 @@ int main()
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// bind textures on corresponding texture units
-			//glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, texture1);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, texture2);
 
 			//glUseProgram(s_shaderProgram);
 			myShader.use();
@@ -133,6 +163,12 @@ int main()
 		}
 	}
 
+	// optional: de-allocate all resources once they've outlived their purpose.
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ebo);
+
+	// glfw: terminate, clearing all previously allocated GLFW resource.
 	glfwTerminate();
 
 	return 0;

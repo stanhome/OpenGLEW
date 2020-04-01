@@ -44,7 +44,7 @@ void Shader::init(const GLchar *vShaderCode, const GLchar *fShaderCode)
 			break;
 		}
 
-		
+
 		if (!isSuccess)
 		{
 			GLchar inforLog[512];
