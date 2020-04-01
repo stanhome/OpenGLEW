@@ -1,6 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include "renderer/Shader.h"
 
@@ -24,10 +27,13 @@ GLFWwindow *createWindow(int w, int h) {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// ¸æËßGLFWÎÒÃÇÊ¹ÓÃµÄÊÇºËĞÄÄ£Ê½(Core-profile)
+	// å‘Šè¯‰GLFWæˆ‘ä»¬ä½¿ç”¨çš„æ˜¯æ ¸å¿ƒæ¨¡å¼(Core-profile)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// Èç¹ûÊ¹ÓÃµÄÊÇMac OS XÏµÍ³£¬Äã»¹ĞèÒª¼ÓÏÂÃæÕâĞĞ´úÂëµ½ÄãµÄ³õÊ¼»¯´úÂëÖĞÕâĞ©ÅäÖÃ²ÅÄÜÆğ×÷ÓÃ£º
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+#ifdef __APPLE__
+	// å¦‚æœä½¿ç”¨çš„æ˜¯Mac OS Xç³»ç»Ÿï¼Œä½ è¿˜éœ€è¦åŠ ä¸‹é¢è¿™è¡Œä»£ç åˆ°ä½ çš„åˆå§‹åŒ–ä»£ç ä¸­è¿™äº›é…ç½®æ‰èƒ½èµ·ä½œç”¨ï¼š
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
 
 	GLFWwindow *window = glfwCreateWindow(w, h, "LearnOpenGL", nullptr, nullptr);
 	if (window == nullptr)

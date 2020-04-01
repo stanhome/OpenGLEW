@@ -1,4 +1,4 @@
-#include <string>
+﻿#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -12,8 +12,9 @@ using namespace std;
 Shader::Shader(const char *vertexPath, const char *fragmentPath)
 {
 	// 1. retrieve the vertex/fragment source code from filePath
-	std::string vCode = readShaderSrc(getFullPath(vertexPath).c_str());
-	std::string fCode = readShaderSrc(getFullPath(fragmentPath).c_str());
+	// 直接使用相对目录也可以(放到工作目录下）
+	std::string vCode = readShaderSrc(vertexPath);
+	std::string fCode = readShaderSrc(fragmentPath);
 
 	init(vCode.c_str(), fCode.c_str());
 }

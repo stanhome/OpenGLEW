@@ -39,7 +39,7 @@
     <ClCompile Include="src\renderer\Shader.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\basicSample\main_04.cpp">
+    <ClCompile Include="src\basicSample\main_05_texture.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
