@@ -42,6 +42,9 @@
     <ClCompile Include="src\basicSample\main_05_texture.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\Texture.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\include\glad\glad.h">
@@ -61,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="src\common\utils.h">
       <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Texture.h">
+      <Filter>src\renderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

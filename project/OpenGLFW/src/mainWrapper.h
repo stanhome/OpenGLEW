@@ -2,10 +2,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 #include "renderer/Shader.h"
+#include "renderer/Texture.h"
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
@@ -24,6 +22,8 @@ void processInput(GLFWwindow *window) {
 
 
 GLFWwindow *createWindow(int w, int h) {
+	Texture::initStbi();
+
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
