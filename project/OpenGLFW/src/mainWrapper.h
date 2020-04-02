@@ -25,6 +25,9 @@ void processInput(GLFWwindow *window) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
+void configOpenglGlobalState() {
+	glEnable(GL_DEPTH_TEST);
+}
 
 GLFWwindow *createWindow(int w, int h) {
 	Texture::initStbi();
@@ -67,8 +70,12 @@ GLFWwindow *createWindow(int w, int h) {
 
 	//glfwSetKeyCallback(window, keyCallback);
 
+	configOpenglGlobalState();
+
 	return window;
 }
+
+
 
 
 class V {
