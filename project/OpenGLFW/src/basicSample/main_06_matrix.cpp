@@ -123,8 +123,21 @@ int main()
 	// or set it manually like so:
 	glUniform1i(glGetUniformLocation(myShader.id, "texture2"), 1);
 
+
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	glm::mat4 matrixM = glm::mat4(1.0f);
-	matrixM = glm::rotate(matrixM, glm::radians(-55.0f), V::left);
 	glm::mat4 matrixV = glm::mat4(1.0f);
 	// note that we're translating the scene in the reverse direction of where we want to move.
 	matrixV = glm::translate(matrixV, glm::vec3(0.0f, 0.0f, -3.0f));
@@ -133,6 +146,7 @@ int main()
 	
 	// column vector, so multiplication from right to left.
 	glm::mat4 matrixMVP = matrixP * matrixV * matrixM;
+	glm::mat4 matrixVP = matrixP * matrixV;
 
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
@@ -156,11 +170,22 @@ int main()
 
 			// Get matrix's uniform location and set matrix
 			GLint mvpLoc = glGetUniformLocation(myShader.id, "MVP");
-			glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(matrixMVP));
+			//glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(matrixMVP));
 
 			// Draw container
 			glBindVertexArray(vao);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+
+			for (int i = 0; i < 10; ++i)
+			{
+				matrixM = glm::translate(glm::mat4(1.0f), cubePositions[i]);
+				float angle = 20.0f * i;
+				matrixM = glm::rotate(matrixM, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+				matrixMVP = matrixVP * matrixM;
+				glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, &matrixMVP[0][0]);
+
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+
 			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
