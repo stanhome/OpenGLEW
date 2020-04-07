@@ -61,20 +61,29 @@ const int HEIGHT = 600;
 
 glm::vec3 s_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 s_cameraForward = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 s_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 s_cameraUp = V::up;
+
+float s_deltaTime = 0.0f; // Time between current frame and last frame
+float s_lastFrame = 0.0f; // Time of last frame;
 
 void onProcessInput(GLFWwindow *window)
 {
-	const float CAMERA_SPEED = 0.05f;
+	const float CAMERA_SPEED = 2.5f;
+
+	// keep the same movement speed in different hardware PC.
+	float currentFrame = glfwGetTime();
+	s_deltaTime = currentFrame - s_lastFrame;
+	s_lastFrame = currentFrame;
+	float cameraSpeed = CAMERA_SPEED * s_deltaTime;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		s_cameraPos += CAMERA_SPEED * s_cameraForward;
+		s_cameraPos += cameraSpeed * s_cameraForward;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		s_cameraPos -= CAMERA_SPEED * s_cameraForward;
+		s_cameraPos -= cameraSpeed * s_cameraForward;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		s_cameraPos -= glm::normalize(glm::cross(s_cameraForward, s_cameraUp)) * CAMERA_SPEED;
+		s_cameraPos -= glm::normalize(glm::cross(s_cameraForward, s_cameraUp)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		s_cameraPos += glm::normalize(glm::cross(s_cameraForward, s_cameraUp)) * CAMERA_SPEED;
+		s_cameraPos += glm::normalize(glm::cross(s_cameraForward, s_cameraUp)) * cameraSpeed;
 }
 
 int main()
@@ -194,12 +203,7 @@ int main()
 			// Draw container
 			glBindVertexArray(vao);
 
-			// rotation camera test
-			const float radius = 10.0f;
-			float time = glfwGetTime();
-			float camX = sin(time) * radius;
-			float camZ = cos(time) * radius;
-			matrixV = glm::lookAt(glm::vec3(camX, 0, camZ), V::zero, V::up);
+			matrixV = glm::lookAt(s_cameraPos, s_cameraPos + s_cameraForward, s_cameraUp);
 
 			for (int i = 0; i < 10; ++i)
 			{
