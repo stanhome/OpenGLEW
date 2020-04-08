@@ -56,85 +56,12 @@ static const GLuint s_indices[] = {
 const char *SHADER_VERTEX_PATH = "res/shaders/01_started/1-5-matrix.vs";
 const char *SHADER_FREGMENT_PATH = "res/shaders/01_started/1-5-matrix.fs";
 
-const int WIDTH = 800;
-const int HEIGHT = 600;
-
-glm::vec3 s_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 s_cameraForward = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 s_cameraUp = V::up;
-float s_cameraFOV = 45.0f;
-
-float s_deltaTime = 0.0f; // Time between current frame and last frame
-float s_lastFrame = 0.0f; // Time of last frame;
 
 void onProcessInput(GLFWwindow *window)
 {
-	const float CAMERA_SPEED = 2.5f;
 
-	// keep the same movement speed in different hardware PC.
-	float currentFrame = glfwGetTime();
-	s_deltaTime = currentFrame - s_lastFrame;
-	s_lastFrame = currentFrame;
-	float cameraSpeed = CAMERA_SPEED * s_deltaTime;
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		s_cameraPos += cameraSpeed * s_cameraForward;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		s_cameraPos -= cameraSpeed * s_cameraForward;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		s_cameraPos -= glm::normalize(glm::cross(s_cameraForward, s_cameraUp)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		s_cameraPos += glm::normalize(glm::cross(s_cameraForward, s_cameraUp)) * cameraSpeed;
 }
 
-
-float yaw = -90.0f, pitch = 0.0f;
-double lastX = 400, lastY = 300;
-void mouseCallback(GLFWwindow *window, double xpos, double ypos)
-{
-	/*
-	- Calculate the mouse's offset since the last frame.
-	- Add the offset values to the camera's yaw and pitch values.
-	- Add some constraints to the minimum/maximum pitch values.
-	- Calculate the direction vector.
-	*/
-
-	float xoffset = xpos - lastX, yoffset = ypos - lastY;
-	lastX = xpos;
-	lastY = ypos;
-
-	const float SENSITIVITY = 0.05f;
-	xoffset *= SENSITIVITY;
-	yoffset *= SENSITIVITY;
-
-	yaw += xoffset;
-	pitch -= yoffset;
-
-	if (pitch > 89.0f)
-	{
-		pitch = 89.0f;
-	}
-	if (pitch < -89.0f)
-	{
-		pitch = -89.0f;
-	}
-
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	s_cameraForward = glm::normalize(direction);
-}
-
-void scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
-{
-	if (s_cameraFOV >= 1.0f && s_cameraFOV <= 45.0f)
-	{
-		s_cameraFOV -= yoffset;
-	}
-	else if (s_cameraFOV < 1.0f) s_cameraFOV = 1.0f;
-	else if (s_cameraFOV > 45.0f) s_cameraFOV = 45.0f;
-}
 
 int main()
 {
@@ -143,13 +70,6 @@ int main()
 	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
 	if (window == nullptr) return -1;
 
-	// set mouse moving to handle camera rotation
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouseCallback);
-	glfwGetCursorPos(window, &lastX, &lastY);
-
-	// set mouse scrolling to handle camera FOV
-	glfwSetScrollCallback(window, scrollCallback);
 
 	Shader myShader(SHADER_VERTEX_PATH, SHADER_FREGMENT_PATH);
 
@@ -224,11 +144,8 @@ int main()
 	};
 
 	glm::mat4 matrixM = glm::mat4(1.0f);
-	glm::mat4 matrixV = glm::mat4(1.0f);
-	// note that we're translating the scene in the reverse direction of where we want to move.
-	matrixV = glm::translate(matrixV, glm::vec3(0.0f, 0.0f, -3.0f));
-	glm::mat4 matrixP;
-	matrixP = glm::perspective(glm::radians(s_cameraFOV), WIDTH * 1.0f/ HEIGHT, 0.1f, 100.0f);
+	glm::mat4 matrixV = camera.getViewMatrix();
+	glm::mat4 matrixP = glm::perspective(glm::radians(camera.fov), WIDTH * 1.0f/ HEIGHT, 0.1f, 100.0f);
 	
 	// column vector, so multiplication from right to left.
 	glm::mat4 matrixMVP = matrixP * matrixV * matrixM;
@@ -236,10 +153,20 @@ int main()
 
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
+		// pre-frame time logic
+		// ------------------------------
+		// keep the same movement speed in different hardware PC.
+		float currentFrame = glfwGetTime();
+		s_deltaTime = currentFrame - s_lastFrame;
+		s_lastFrame = currentFrame;
+
+
 		//input
+		// ------------------------------
 		processInput(window);
 
-		//Rendering commands here
+		// Render
+		// ------------------------------
 		{
 			// do Rendering
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -261,8 +188,8 @@ int main()
 			// Draw container
 			glBindVertexArray(vao);
 
-			matrixV = glm::lookAt(s_cameraPos, s_cameraPos + s_cameraForward, s_cameraUp);
-			matrixP = glm::perspective(glm::radians(s_cameraFOV), WIDTH * 1.0f / HEIGHT, 0.1f, 100.0f);
+			matrixV = camera.getViewMatrix();
+			matrixP = glm::perspective(glm::radians(camera.fov), WIDTH * 1.0f / HEIGHT, 0.1f, 100.0f);
 
 			for (int i = 0; i < 10; ++i)
 			{
@@ -281,6 +208,8 @@ int main()
 			glBindVertexArray(0);
 		}
 		
+		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
+		// ------------------------------
 		{
 			// check and call events and swap the buffers
 			glfwSwapBuffers(window);

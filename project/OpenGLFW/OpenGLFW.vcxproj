@@ -28,8 +28,10 @@
     <ClInclude Include="..\third-party\include\glad\glad.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3native.h" />
+    <ClInclude Include="src\common\commonDefine.h" />
     <ClInclude Include="src\common\utils.h" />
     <ClInclude Include="src\mainWrapper.h" />
+    <ClInclude Include="src\renderer\Camera.h" />
     <ClInclude Include="src\renderer\Shader.h" />
     <ClInclude Include="src\renderer\Texture.h" />
   </ItemGroup>
