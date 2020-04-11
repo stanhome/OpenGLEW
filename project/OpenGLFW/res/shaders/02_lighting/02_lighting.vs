@@ -10,8 +10,8 @@ uniform mat4 M;
 
 void main()
 {
-	fragPos = vec3(M * vec4(aPos, 1.0))
-    normal = mat3(M) * aNormal;
+	fragPos = vec3(M * vec4(aPos, 1.0));
+    normal = mat3(transpose(inverse(M))) * aNormal;
 
     gl_Position = MVP * vec4(aPos, 1.0);
 }

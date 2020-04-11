@@ -58,7 +58,7 @@ int main()
 	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
 	if (window == nullptr) return -1;
 
-	Shader objShader(SHADER_PATH("01_lamp.vs"), SHADER_PATH("01_color.fs"));
+	Shader objShader(SHADER_PATH("02_lighting.vs"), SHADER_PATH("02_lighting.fs"));
 	Shader lampShader(SHADER_PATH("01_lamp.vs"), SHADER_PATH("01_lamp.fs"));
 
 	// generate render object
@@ -72,10 +72,13 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(s_vertices), s_vertices, GL_STATIC_DRAW);
 
 	glBindVertexArray(vaoCube);
-	int stride = 3 * sizeof(GLfloat);
+	int stride = 6 * sizeof(GLfloat);
 	// pos attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
 	//Unbind VAO  Unbind VAO(it's always a good thing to unbind any buffer/array to prevent strange bugs) 
 	glBindVertexArray(0);
 
@@ -117,9 +120,12 @@ int main()
 			objShader.use();
 			objShader.setVec3("objColor", glm::vec3(1.0f, 0.5f, 0.31f));
 			objShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+			objShader.setVec3("lightPos", s_lightPos);
+			objShader.setVec3("viewPos", camera.pos);
 			glm::mat4 objMatrixM = glm::mat4(1.0f);
 			glm::mat4 objMatrixMVP = matrixP * matrixV * objMatrixM;
 			objShader.setMat4("MVP", objMatrixMVP);
+			objShader.setMat4("M", objMatrixM);
 
 			glBindVertexArray(vaoCube);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
