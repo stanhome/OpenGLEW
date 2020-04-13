@@ -29,6 +29,10 @@ protected:
 
 private:
 	std::string readShaderSrc(const char *path) const;
+
+private:
+	std::string _vertPath;
+	std::string _fragPath;
 };
 
 inline void Shader::setBool(const std::string &name, bool value) const {

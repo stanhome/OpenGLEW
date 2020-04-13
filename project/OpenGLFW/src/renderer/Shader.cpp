@@ -10,6 +10,8 @@
 using namespace std;
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath)
+	: _vertPath(vertexPath)
+	, _fragPath(fragmentPath)
 {
 	// 1. retrieve the vertex/fragment source code from filePath
 	// 直接使用相对目录也可以(放到工作目录下）
@@ -28,7 +30,7 @@ void Shader::init(const GLchar *vShaderCode, const GLchar *fShaderCode)
 	// 2. compile shader code.
 	GLuint vertex, fragment;
 
-	auto checkIsSuccessFunc = [](GLuint shaderObjId, GLenum pname, const char *title) -> void {
+	auto checkIsSuccessFunc = [](GLuint shaderObjId, GLenum pname, const std::string &title) -> void {
 		// Print compile errors if any
 		GLint isSuccess;
 
@@ -57,13 +59,13 @@ void Shader::init(const GLchar *vShaderCode, const GLchar *fShaderCode)
 	vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vShaderCode, NULL);
 	glCompileShader(vertex);
-	checkIsSuccessFunc(vertex, GL_COMPILE_STATUS, "shader vertex compilation");
+	checkIsSuccessFunc(vertex, GL_COMPILE_STATUS, _vertPath + ", shader vertex compilation");
 
 	// fragment shader
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment, 1, &fShaderCode, NULL);
 	glCompileShader(fragment);
-	checkIsSuccessFunc(fragment, GL_COMPILE_STATUS, "shader fragment compilation");
+	checkIsSuccessFunc(fragment, GL_COMPILE_STATUS, _fragPath + ", shader fragment compilation");
 
 	// shader program
 	id = glCreateProgram();
