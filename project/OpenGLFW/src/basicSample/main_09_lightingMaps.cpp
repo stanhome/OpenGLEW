@@ -73,6 +73,7 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(s_vertices), s_vertices, GL_STATIC_DRAW);
 
 	Texture diffuseMap(GL_TEXTURE_2D, "res/imgs/container2.png", GL_RGBA);
+	Texture specularMap(GL_TEXTURE_2D, "res/imgs/container2_specular.png", GL_RGBA);
 
 	glBindVertexArray(vaoCube);
 	int stride = 8 * sizeof(GLfloat);
@@ -129,7 +130,7 @@ int main()
 			objShader.setVec3("light.specular", 1.0f);
 			objShader.setVec3("light.pos", s_lightPos);
 			objShader.setInt("material.diffuse", 0);
-			objShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+			objShader.setInt("material.specular", 1);
 			objShader.setFloat("material.shininess", 32.0f);
 
 			glm::mat4 objMatrixM = glm::mat4(1.0f);
@@ -138,6 +139,7 @@ int main()
 			objShader.setMat4("M", objMatrixM);
 
 			diffuseMap.bind(GL_TEXTURE0);
+			specularMap.bind(GL_TEXTURE1);
 
 			glBindVertexArray(vaoCube);
 			glDrawArrays(GL_TRIANGLES, 0, 36);

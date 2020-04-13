@@ -9,7 +9,7 @@ uniform vec3 viewPos;
 
 struct Material {
 	sampler2D diffuse;
-	vec3 specular;
+	sampler2D specular;
 	float shininess;
 };
 uniform Material material;
@@ -25,17 +25,17 @@ uniform Light light;
 
 void main()
 {
-	vec3 diffuseColor = vec3(texture(material.diffuse, texCoords));
+	vec3 diffuseMap = vec3(texture(material.diffuse, texCoords));
 
 	/////////////
 	// 1.ambient
-	vec3 ambient = light.ambient * diffuseColor;
+	vec3 ambient = light.ambient * diffuseMap;
 
 	/////////////
 	// 2.diffuse
 	vec3 n = normalize(normal);
 	vec3 lightDir = normalize(light.pos - fragPos);
-	vec3 diffuse = max(dot(n, lightDir), 0.0) * diffuseColor * light.diffuse;
+	vec3 diffuse = max(dot(n, lightDir), 0.0) * diffuseMap * light.diffuse;
 
 	// Half Lambert 是一个视觉增强效果，没有物理依据，主要是光线找不到的阴影部分可以亮一些
 	// vec3 halfLambert = diffuse * 0.5 + 0.5;
@@ -52,7 +52,7 @@ void main()
 	// vec3 h = normalize(viewDir + lightDir);
 	// spec = pow(max(dot(h, normal), 0.0f), shininess);
 
-	vec3 specular = material.specular * spec * light.specular;
+	vec3 specular = vec3(texture(material.specular, texCoords)) * spec * light.specular;
 
 	/////////////
 	// 4. fincal color
