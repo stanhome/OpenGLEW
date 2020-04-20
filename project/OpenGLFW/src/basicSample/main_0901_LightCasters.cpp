@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <sstream>
 
 #include "mainWrapper.h"
 
@@ -62,17 +63,30 @@ glm::vec3 s_cubePositions[] = {
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
+glm::vec3 s_pointLightPositions[] = {
+	glm::vec3(0.7f,  0.2f,  2.0f),
+	glm::vec3(2.3f, -3.3f, -4.0f),
+	glm::vec3(-4.0f,  2.0f, -12.0f),
+	glm::vec3(0.0f,  0.0f, -3.0f)
+};
+
+glm::vec3 s_pointLightColor[] = {
+	glm::vec3(1.0f, 0.0f, 0.0f),
+	glm::vec3(1.0f, 1.0f, 0.0f),
+	glm::vec3(0.0f, 0.0f, 1.0f),
+	glm::vec3(1.0f, 1.0f, 1.0f),
+};
+
+const unsigned int s_pointLightNumber = sizeof(s_pointLightPositions) / sizeof(*s_pointLightPositions);
 
 #define SHADER_PATH(SHADER_NAME) "res/shaders/02_lighting/" SHADER_NAME
-
-glm::vec3 s_lightPos(1.2f, 1.0f, 2.0f);
 
 int main()
 {
 	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
 	if (window == nullptr) return -1;
 
-	Shader objShader(SHADER_PATH("05_lightCasters.vs"), SHADER_PATH("05_lightCasters_spotLight.fs"));
+	Shader objShader(SHADER_PATH("05_lightCasters.vs"), SHADER_PATH("06_multiple_lights.fs"));
 	Shader lampShader(SHADER_PATH("01_lamp.vs"), SHADER_PATH("01_lamp.fs"));
 
 	// generate render object
@@ -139,23 +153,48 @@ int main()
 			objShader.use();
 			objShader.setVec3("viewPos", camera.pos);
 
-			// light properties
-			objShader.setVec3("light.pos", camera.pos);
-			objShader.setVec3("light.direction", camera.forward);
-			objShader.setFloat("light.cutoffCos", glm::cos(glm::radians(12.5f)));
-			objShader.setFloat("light.outerCutoffCos", glm::cos(glm::radians(17.5f)));
-
-			objShader.setVec3("light.ambient", 0.1f);
-			objShader.setVec3("light.diffuse", 0.8f);
-			objShader.setVec3("light.specular", 1.0f);
-			objShader.setFloat("light.constant", 1.0f);
-			objShader.setFloat("light.linear", 0.09f);
-			objShader.setFloat("light.quadratic", 0.032f);
 
 			// material properties
 			objShader.setInt("material.diffuse", 0);
 			objShader.setInt("material.specular", 1);
 			objShader.setFloat("material.shininess", 32.0f);
+
+			///////////////////////////////////
+			// light properties
+			// directional light
+			objShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+			objShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+			objShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+			objShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+			// point lights
+			for (int i = 0; i < s_pointLightNumber; ++i)
+			{
+				std::stringstream ss;
+				ss << "pointLights[" << i << "].";
+				string keyPrefix = ss.str();
+
+				objShader.setVec3(keyPrefix + "pos", s_pointLightPositions[i]);
+				objShader.setVec3(keyPrefix + "ambient", 0.05f);
+				//objShader.setVec3(keyPrefix + "diffuse", 0.8f);
+				objShader.setVec3(keyPrefix + "diffuse", s_pointLightColor[i]);
+				objShader.setVec3(keyPrefix + "specular", 1.0f);
+				objShader.setFloat(keyPrefix + "constant", 1.0f);
+				objShader.setFloat(keyPrefix + "linear", 0.09f);
+				objShader.setFloat(keyPrefix + "quadratic", 0.032f);
+			}
+
+			//spot light
+			objShader.setVec3("spotLight.pos", camera.pos);
+			objShader.setVec3("spotLight.direction", camera.forward);
+			objShader.setVec3("spotLight.ambient", 0.0f);
+			objShader.setVec3("spotLight.diffuse", 1.0f);
+			objShader.setVec3("spotLight.specular", 1.0f);
+			objShader.setFloat("spotLight.constant", 1.0f);
+			objShader.setFloat("spotLight.linear", 0.09f);
+			objShader.setFloat("spotLight.quadratic", 0.032f);
+			objShader.setFloat("spotLight.cutoffCos", glm::cos(glm::radians(12.5f)));
+			objShader.setFloat("spotLight.outerCutoffCos", glm::cos(glm::radians(15.0f)));
 
 			glm::mat4 objMatrixM = glm::mat4(1.0f);
 			glm::mat4 objMatrixMVP = matrixP * matrixV * objMatrixM;
@@ -165,15 +204,12 @@ int main()
 			diffuseMap.bind(GL_TEXTURE0);
 			specularMap.bind(GL_TEXTURE1);
 
-			//glBindVertexArray(vaoCube);
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
-
 			glBindVertexArray(vaoCube);
 			for (int i = 0; i < 10; ++i)
 			{
 				objMatrixM = glm::mat4(1.0f);
 				objMatrixM = glm::translate(objMatrixM, s_cubePositions[i]);
-				float angle = 60.0f * i;
+				float angle = 20.0f * i;
 				objMatrixM = glm::rotate(objMatrixM, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
 				objMatrixMVP = matrixP * matrixV * objMatrixM;
@@ -183,16 +219,18 @@ int main()
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 
-
 			// draw the lamp
-			//glm::mat4 lampMatrixM = glm::translate(M::i, s_lightPos);
-			//lampMatrixM = glm::scale(lampMatrixM, glm::vec3(0.2f));
-			//glm::mat4 lampMatrixMVP = matrixP * matrixV * lampMatrixM;
-
-			//lampShader.use();
-			//lampShader.setMat4("MVP", lampMatrixMVP);
-			//glBindVertexArray(vaoLight);
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			lampShader.use();
+			glBindVertexArray(vaoLight);
+			for (unsigned int i = 0; i < s_pointLightNumber; ++i)
+			{
+				glm::mat4 lampMatrixM = glm::translate(M::i, s_pointLightPositions[i]);
+				lampMatrixM = glm::scale(lampMatrixM, glm::vec3(0.2f));
+				glm::mat4 lampMatrixMVP = matrixP * matrixV * lampMatrixM;
+				lampShader.setMat4("MVP", lampMatrixMVP);
+				lampShader.setVec3("color", s_pointLightColor[i]);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 
 			glBindVertexArray(0);
 		}
