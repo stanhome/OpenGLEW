@@ -72,7 +72,7 @@ int main()
 	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
 	if (window == nullptr) return -1;
 
-	Shader objShader(SHADER_PATH("04_lightingMap.vs"), SHADER_PATH("04_lightingMap.fs"));
+	Shader objShader(SHADER_PATH("05_lightCasters.vs"), SHADER_PATH("05_lightCasters_directionLight.fs"));
 	Shader lampShader(SHADER_PATH("01_lamp.vs"), SHADER_PATH("01_lamp.fs"));
 
 	// generate render object
@@ -138,10 +138,15 @@ int main()
 			// render the cube
 			objShader.use();
 			objShader.setVec3("viewPos", camera.pos);
+
+			// light properties
 			objShader.setVec3("light.ambient", 0.2f);
 			objShader.setVec3("light.diffuse", 0.5f);
 			objShader.setVec3("light.specular", 1.0f);
-			objShader.setVec3("light.pos", s_lightPos);
+			//objShader.setVec3("light.pos", s_lightPos);
+			objShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+
+			// material properties
 			objShader.setInt("material.diffuse", 0);
 			objShader.setInt("material.specular", 1);
 			objShader.setFloat("material.shininess", 32.0f);
@@ -154,19 +159,34 @@ int main()
 			diffuseMap.bind(GL_TEXTURE0);
 			specularMap.bind(GL_TEXTURE1);
 
+			//glBindVertexArray(vaoCube);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
+
 			glBindVertexArray(vaoCube);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			for (int i = 0; i < 10; ++i)
+			{
+				objMatrixM = glm::mat4(1.0f);
+				objMatrixM = glm::translate(objMatrixM, s_cubePositions[i]);
+				float angle = 60.0f * i;
+				objMatrixM = glm::rotate(objMatrixM, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+				objMatrixMVP = matrixP * matrixV * objMatrixM;
+				objShader.setMat4("MVP", objMatrixMVP);
+				objShader.setMat4("M", objMatrixM);
+
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 
 
 			// draw the lamp
-			glm::mat4 lampMatrixM = glm::translate(M::i, s_lightPos);
-			lampMatrixM = glm::scale(lampMatrixM, glm::vec3(0.2f));
-			glm::mat4 lampMatrixMVP = matrixP * matrixV * lampMatrixM;
+			//glm::mat4 lampMatrixM = glm::translate(M::i, s_lightPos);
+			//lampMatrixM = glm::scale(lampMatrixM, glm::vec3(0.2f));
+			//glm::mat4 lampMatrixMVP = matrixP * matrixV * lampMatrixM;
 
-			lampShader.use();
-			lampShader.setMat4("MVP", lampMatrixMVP);
-			glBindVertexArray(vaoLight);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			//lampShader.use();
+			//lampShader.setMat4("MVP", lampMatrixMVP);
+			//glBindVertexArray(vaoLight);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			glBindVertexArray(0);
 		}

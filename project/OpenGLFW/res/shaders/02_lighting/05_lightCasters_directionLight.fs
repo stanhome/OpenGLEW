@@ -15,7 +15,8 @@ struct Material {
 uniform Material material;
 
 struct Light {
-	vec3 pos;
+	// vec3 pos;
+	vec3 direction;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -34,7 +35,8 @@ void main()
 	/////////////
 	// 2.diffuse
 	vec3 n = normalize(normal);
-	vec3 lightDir = normalize(light.pos - fragPos);
+	// vec3 lightDir = normalize(light.pos - fragPos);
+	vec3 lightDir = normalize(-light.direction);
 	vec3 diffuse = max(dot(n, lightDir), 0.0) * diffuseMap * light.diffuse;
 
 	// Half Lambert 是一个视觉增强效果，没有物理依据，主要是光线找不到的阴影部分可以亮一些
