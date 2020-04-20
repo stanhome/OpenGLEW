@@ -19,7 +19,7 @@ struct Light {
 	vec3 pos;
 	vec3 direction;
 	float cutoffCos;
-
+	float outerCutoffCos;
 
 	vec3 ambient;
 	vec3 diffuse;
@@ -38,53 +38,49 @@ void main()
 	vec3 lightDir = normalize(light.pos - fragPos);
 	vec3 spotDir = normalize(-light.direction);
 
-	// check if lighting is inside the spotlight cone.
+	/////////////
+	// 1.ambient
+	vec3 ambient = light.ambient * diffuseMap;
+
+	/////////////
+	// 2.diffuse
+	vec3 n = normalize(normal);
+	vec3 diffuse = max(dot(n, lightDir), 0.0) * diffuseMap * light.diffuse;
+
+	// Half Lambert 是一个视觉增强效果，没有物理依据，主要是光线找不到的阴影部分可以亮一些
+	// vec3 halfLambert = diffuse * 0.5 + 0.5;
+	
+
+	/////////////
+	// 3.specular
+	vec3 viewDir = normalize(viewPos - fragPos);
+	// vec3 reflectDir = reflect(-lightDir, normal);
+	vec3 reflectDir = normalize(2 * dot(lightDir, normal) * normal - lightDir);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+
+	// Blinn-Phong, 引入了半向量的概念 h， 避免了计算反射向量 r, 提高效率
+	// vec3 h = normalize(viewDir + lightDir);
+	// spec = pow(max(dot(h, normal), 0.0f), shininess);
+
+	vec3 specular = vec3(texture(material.specular, texCoords)) * spec * light.specular;
+
+
+	// Spot light (soft edges)
 	float theta = dot(lightDir, spotDir);
-	if (theta > light.cutoffCos) {
+	float epsilon = (light.cutoffCos - light.outerCutoffCos);
+	float intensity = clamp((theta - light.outerCutoffCos) / epsilon, 0.0, 1.0);
+	diffuse *= intensity;
+	specular *= intensity;
 
-		/////////////
-		// 1.ambient
-		vec3 ambient = light.ambient * diffuseMap;
 
-		/////////////
-		// 2.diffuse
-		vec3 n = normalize(normal);
-		vec3 diffuse = max(dot(n, lightDir), 0.0) * diffuseMap * light.diffuse;
+	// atteuation 衰减 (same as Point light)
+	float distance = length(light.pos - fragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
 
-		// Half Lambert 是一个视觉增强效果，没有物理依据，主要是光线找不到的阴影部分可以亮一些
-		// vec3 halfLambert = diffuse * 0.5 + 0.5;
-		
-
-		/////////////
-		// 3.specular
-		vec3 viewDir = normalize(viewPos - fragPos);
-		// vec3 reflectDir = reflect(-lightDir, normal);
-		vec3 reflectDir = normalize(2 * dot(lightDir, normal) * normal - lightDir);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-
-		// Blinn-Phong, 引入了半向量的概念 h， 避免了计算反射向量 r, 提高效率
-		// vec3 h = normalize(viewDir + lightDir);
-		// spec = pow(max(dot(h, normal), 0.0f), shininess);
-
-		vec3 specular = vec3(texture(material.specular, texCoords)) * spec * light.specular;
-
-		// Point light
-		float distance = length(light.pos - fragPos);
-		float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-
-		//衰减
-		// remove attenuation from ambient, as otherwise at large distances the light would be darker inside than
-		// outside the spotlight due the ambient term in the else branche
-		// ambient *= attenuation;
-		diffuse *= attenuation;
-		specular *= attenuation;
-
-		/////////////
-		// 4. fincal color
-	    FragColor = vec4((ambient + diffuse + specular), 1.0f);
-	} else {
-		// else, use ambient light so scene isn't completely dark outside the spotlight.
-		FragColor = vec4(light.ambient * diffuseMap, 1.0f);
-	}
-
+	/////////////
+	// 4. fincal color
+    FragColor = vec4((ambient + diffuse + specular), 1.0f);
 }

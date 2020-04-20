@@ -143,8 +143,10 @@ int main()
 			objShader.setVec3("light.pos", camera.pos);
 			objShader.setVec3("light.direction", camera.forward);
 			objShader.setFloat("light.cutoffCos", glm::cos(glm::radians(12.5f)));
-			objShader.setVec3("light.ambient", 0.2f);
-			objShader.setVec3("light.diffuse", 0.5f);
+			objShader.setFloat("light.outerCutoffCos", glm::cos(glm::radians(17.5f)));
+
+			objShader.setVec3("light.ambient", 0.1f);
+			objShader.setVec3("light.diffuse", 0.8f);
 			objShader.setVec3("light.specular", 1.0f);
 			objShader.setFloat("light.constant", 1.0f);
 			objShader.setFloat("light.linear", 0.09f);
