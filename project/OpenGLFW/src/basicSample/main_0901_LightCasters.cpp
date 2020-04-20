@@ -72,7 +72,7 @@ int main()
 	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
 	if (window == nullptr) return -1;
 
-	Shader objShader(SHADER_PATH("05_lightCasters.vs"), SHADER_PATH("05_lightCasters_directionLight.fs"));
+	Shader objShader(SHADER_PATH("05_lightCasters.vs"), SHADER_PATH("05_lightCasters_pointLight.fs"));
 	Shader lampShader(SHADER_PATH("01_lamp.vs"), SHADER_PATH("01_lamp.fs"));
 
 	// generate render object
@@ -143,8 +143,10 @@ int main()
 			objShader.setVec3("light.ambient", 0.2f);
 			objShader.setVec3("light.diffuse", 0.5f);
 			objShader.setVec3("light.specular", 1.0f);
-			//objShader.setVec3("light.pos", s_lightPos);
-			objShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+			objShader.setFloat("light.constant", 1.0f);
+			objShader.setFloat("light.linear", 0.09f);
+			objShader.setFloat("light.quadratic", 0.032f);
+			objShader.setVec3("light.pos", s_lightPos);
 
 			// material properties
 			objShader.setInt("material.diffuse", 0);
@@ -179,14 +181,14 @@ int main()
 
 
 			// draw the lamp
-			//glm::mat4 lampMatrixM = glm::translate(M::i, s_lightPos);
-			//lampMatrixM = glm::scale(lampMatrixM, glm::vec3(0.2f));
-			//glm::mat4 lampMatrixMVP = matrixP * matrixV * lampMatrixM;
+			glm::mat4 lampMatrixM = glm::translate(M::i, s_lightPos);
+			lampMatrixM = glm::scale(lampMatrixM, glm::vec3(0.2f));
+			glm::mat4 lampMatrixMVP = matrixP * matrixV * lampMatrixM;
 
-			//lampShader.use();
-			//lampShader.setMat4("MVP", lampMatrixMVP);
-			//glBindVertexArray(vaoLight);
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			lampShader.use();
+			lampShader.setMat4("MVP", lampMatrixMVP);
+			glBindVertexArray(vaoLight);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			glBindVertexArray(0);
 		}
