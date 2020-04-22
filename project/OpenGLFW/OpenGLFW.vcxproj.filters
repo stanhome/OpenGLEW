@@ -42,8 +42,14 @@
     <ClCompile Include="src\renderer\Texture.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\basicSample\main_0901_LightCasters.cpp">
+    <ClCompile Include="src\basicSample\main_1000_model.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Mesh.cpp">
+      <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Model.cpp">
+      <Filter>src\renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="src\common\commonDefine.h">
       <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Mesh.h">
+      <Filter>src\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Model.h">
+      <Filter>src\renderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

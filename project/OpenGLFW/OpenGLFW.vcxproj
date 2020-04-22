@@ -20,7 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
-    <ClCompile Include="src\basicSample\main_0901_LightCasters.cpp" />
+    <ClCompile Include="src\basicSample\main_1000_model.cpp" />
+    <ClCompile Include="src\renderer\Mesh.cpp" />
+    <ClCompile Include="src\renderer\Model.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
     <ClCompile Include="src\renderer\Texture.cpp" />
   </ItemGroup>
@@ -32,6 +34,8 @@
     <ClInclude Include="src\common\utils.h" />
     <ClInclude Include="src\mainWrapper.h" />
     <ClInclude Include="src\renderer\Camera.h" />
+    <ClInclude Include="src\renderer\Mesh.h" />
+    <ClInclude Include="src\renderer\Model.h" />
     <ClInclude Include="src\renderer\Shader.h" />
     <ClInclude Include="src\renderer\Texture.h" />
   </ItemGroup>
@@ -99,12 +103,17 @@
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)third-party\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(OutDir)res" mkdir "$(OutDir)res"
-xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"</Command>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+xcopy /Y /Q /S "$(SolutionDir)third-party\libs\*.dll" "$(OutDir)"
+xcopy /Y /Q /S "$(SolutionDir)third-party\libs\*.pdb" "$(OutDir)"
+if not exist "$(OutDir)res" mkdir "$(OutDir)res"
+xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"
+
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -126,12 +135,17 @@ xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"</Command>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)third-party\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(OutDir)res" mkdir "$(OutDir)res"
-xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"</Command>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+xcopy /Y /Q /S "$(SolutionDir)third-party\libs\*.dll" "$(OutDir)"
+xcopy /Y /Q /S "$(SolutionDir)third-party\libs\*.pdb" "$(OutDir)"
+if not exist "$(OutDir)res" mkdir "$(OutDir)res"
+xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"
+
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -17,11 +17,23 @@ public:
 
 	// @param textureUnit, like: GL_TEXTURE0
 	void bind(GLenum textureUnit);
+
+	inline void setSamplerName(const std::string &namePrefix, int idx) {
+		_samplerName = namePrefix + std::to_string(idx);
+	}
+	inline const std::string &getSamplerName() const {
+		return _samplerName;
+	}
+
 private:
 	void load(const std::string &filePath);
+
+public:
 
 private:
 	GLenum _target;
 	GLenum _format;
 	GLuint _textureObj;
+
+	std::string _samplerName;
 };
