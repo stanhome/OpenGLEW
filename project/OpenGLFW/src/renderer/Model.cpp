@@ -123,7 +123,14 @@ std::shared_ptr<Mesh> Model::processMesh(aiMesh * mesh, const aiScene * scene)
 std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial * mat, aiTextureType type, string typeName)
 {
 	vector<shared_ptr<Texture>> textures;
-	for (unsigned int i = 0; i < mat->GetTextureCount(type); ++i)
+	unsigned int textureCount = mat->GetTextureCount(type);
+
+#if _LOG_ == 1
+	if (textureCount > 0)
+		cout << "-> loading " << typeName << ", count:" << textureCount << endl;
+#endif
+
+	for (unsigned int i = 0; i < textureCount; ++i)
 	{
 		aiString str;
 		mat->GetTexture(type, i, &str);

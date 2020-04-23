@@ -25,7 +25,10 @@ Texture::Texture(GLenum target, const std::string &filePath)
 
 void Texture::load(const std::string &filePath)
 {
+#if _LOG_ == 1
 	cout << "Texture::load begin, path:" << filePath << endl;
+#endif
+
 	glGenTextures(1, &_textureObj);
 	glBindTexture(_target, _textureObj);
 	// set the texture wrapping parameters
@@ -57,7 +60,9 @@ void Texture::load(const std::string &filePath)
 		cout << "[E] Failed to load texture" << endl;
 	}
 	stbi_image_free(data);
+#if _LOG_ == 1
 	cout << "Texture::load end." << endl;
+#endif
 }
 
 void Texture::bind(GLenum textureUnit)

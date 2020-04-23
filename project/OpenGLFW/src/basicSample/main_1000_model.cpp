@@ -13,10 +13,10 @@ glm::vec3 s_pointLightPositions[] = {
 };
 
 glm::vec3 s_pointLightColor[] = {
-	glm::vec3(1.0f, 0.0f, 0.0f),
+	glm::vec3(1.0f, 1.0f, 1.0f),
 	glm::vec3(1.0f, 1.0f, 0.0f),
 	glm::vec3(0.0f, 0.0f, 1.0f),
-	glm::vec3(1.0f, 1.0f, 1.0f),
+	glm::vec3(1.0f, 0.0f, 0.0f),
 };
 
 const unsigned int s_pointLightNumber = sizeof(s_pointLightPositions) / sizeof(*s_pointLightPositions);
@@ -59,8 +59,29 @@ int main()
 			glm::mat4 matrixP = glm::perspective(glm::radians(camera.fov), (float)WIDTH / HEIGHT, 0.1f, 100.0f);
 			glm::mat4 matrixV = camera.getViewMatrix();
 
-			// render the cube
+			// render the obj
 			objShader.use();
+			objShader.setVec3("viewPos", camera.pos);
+
+			objShader.setFloat("mat_shininess", 32.0f);
+
+			//light properties
+			// directional light
+			objShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+			objShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+			objShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+			objShader.setVec3("dirLight.specular", 0.5f);
+
+			string keyPrefix = "pointLight.";
+			objShader.setVec3(keyPrefix + "pos", s_pointLightPositions[0]);
+			objShader.setVec3(keyPrefix + "ambient", 0.05f);
+			//objShader.setVec3(keyPrefix + "diffuse", 0.8f);
+			objShader.setVec3(keyPrefix + "diffuse", s_pointLightColor[0]);
+			objShader.setVec3(keyPrefix + "specular", 1.0f);
+			objShader.setFloat(keyPrefix + "constant", 1.0f);
+			objShader.setFloat(keyPrefix + "linear", 0.09f);
+			objShader.setFloat(keyPrefix + "quadratic", 0.032f);
+
 			glm::mat4 objMatrixM = glm::mat4(1.0f);
 			// translate it down so it's at the center of the scene
 			objMatrixM = glm::translate(objMatrixM, glm::vec3(0.0f, -1.75f, 0.0f));
@@ -68,8 +89,10 @@ int main()
 			objMatrixM = glm::scale(objMatrixM, glm::vec3(0.2f, 0.2f, 0.2f));
 			glm::mat4 objMatrixMVP = matrixP * matrixV * objMatrixM;
 			objShader.setMat4("MVP", objMatrixMVP);
+			objShader.setMat4("M", objMatrixM);
 
 			myModel.draw(objShader);
+
 		}
 		
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
