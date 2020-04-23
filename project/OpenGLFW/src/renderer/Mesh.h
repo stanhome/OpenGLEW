@@ -29,6 +29,7 @@ public:
 
 public:
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<std::shared_ptr<Texture>> textures);
+	~Mesh();
 
 	void draw(Shader shader);
 

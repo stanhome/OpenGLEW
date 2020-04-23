@@ -24,11 +24,16 @@ private:
 	bool _isGammaCorrection;
 
 public:
-	Model(const std::string &path, bool isGammaCorrection) : _isGammaCorrection(isGammaCorrection) {
+	Model(const std::string &path, bool isGammaCorrection = false) : _isGammaCorrection(isGammaCorrection) {
 		loadModel(path);
 	}
 
-	void draw(Shader shader);
+	inline void draw(Shader shader) {
+		for (unsigned int i = 0; i < meshes.size(); ++i)
+		{
+			meshes[i]->draw(shader);
+		}
+	}
 
 private:
 	// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in meshes vector

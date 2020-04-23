@@ -11,6 +11,7 @@
 #include "renderer/Texture.h"
 #include "renderer/Shader.h"
 #include "renderer/Camera.h"
+#include "renderer/Model.h"
 
 // settings
 const int WIDTH = 800;

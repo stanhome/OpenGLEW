@@ -17,15 +17,15 @@ void Texture::initStbi()
 	stbi_set_flip_vertically_on_load(true);
 }
 
-Texture::Texture(GLenum target, const std::string &filePath, GLenum format)
+Texture::Texture(GLenum target, const std::string &filePath)
 : _target(target)
-, _format(format)
 {
 	load(filePath);
 }
 
 void Texture::load(const std::string &filePath)
 {
+	cout << "Texture::load begin, path:" << filePath << endl;
 	glGenTextures(1, &_textureObj);
 	glBindTexture(_target, _textureObj);
 	// set the texture wrapping parameters
@@ -40,7 +40,16 @@ void Texture::load(const std::string &filePath)
 	unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &channel, 0);
 	if (data)
 	{
-		glTexImage2D(_target, 0, _format, width, height, 0, _format, GL_UNSIGNED_BYTE, data);
+		GLenum format;
+		switch (channel)
+		{
+		case 1: format = GL_RED; break;
+		case 3: format = GL_RGB; break;
+		case 4: format = GL_RGBA; break;
+		default : break;
+		}
+
+		glTexImage2D(_target, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(_target);
 	}
 	else
@@ -48,6 +57,7 @@ void Texture::load(const std::string &filePath)
 		cout << "[E] Failed to load texture" << endl;
 	}
 	stbi_image_free(data);
+	cout << "Texture::load end." << endl;
 }
 
 void Texture::bind(GLenum textureUnit)

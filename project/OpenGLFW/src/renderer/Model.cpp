@@ -27,7 +27,7 @@ void Model::loadModel(const std::string & path)
 
 	_directory = path.substr(0, path.find_last_of('/'));
 	//process ASSIMP's root node recursively
-	
+	processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode * node, const aiScene * scene)
@@ -138,7 +138,7 @@ std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial * m
 		else {
 			// if texture hasn't been loaded already, load it.
 			string fullPath = _directory + "/" + str.C_Str();
-			auto tex = make_shared<Texture>(GL_TEXTURE_2D, fullPath, GL_RGBA);
+			auto tex = make_shared<Texture>(GL_TEXTURE_2D, fullPath);
 			tex->setSamplerName(typeName, i);
 			textures.push_back(tex);
 
@@ -146,7 +146,7 @@ std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial * m
 		}
 	}
 
-	return std::vector<std::shared_ptr<Texture>>();
+	return textures;
 }
 
 
