@@ -1,10 +1,9 @@
 #version 330 core
 in vec3 fragPos;
-in vec3 normal;
 in vec2 texCoords;
+in mat3 TBN;
 
 out vec4 FragColor;
-
 
 struct DirLight {
 	vec3 direction;
@@ -43,7 +42,8 @@ vec3 calcPointLight(PointLight light, vec3 n, vec3 fragPos, vec3 viewDir);
 void main()
 {
 	// properties
-	vec3 n = normalize(normal);
+	vec3 normalMap = (texture(tex_normal0, texCoords).rgb * 2.0 - 1.0);
+	vec3 n = normalize(TBN * normalMap);
 	vec3 viewDir = normalize(viewPos - fragPos);
 
 	// phase 1: directional lighting
@@ -68,7 +68,7 @@ vec3 calcDirLight(DirLight light, vec3 n, vec3 viewDir)
 
 	// specular shading
 	// vec3 reflectDir = reflect(-lightDir, normal);
-	vec3 reflectDir = normalize(2 * dot(lightDir, normal) * normal - lightDir);
+	vec3 reflectDir = normalize(2 * dot(lightDir, n) * n - lightDir);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), mat_shininess);
 
 	//combine results
@@ -91,7 +91,7 @@ vec3 calcPointLight(PointLight light, vec3 n, vec3 fragPos, vec3 viewDir)
 
 	// specular shading
 	// vec3 reflectDir = reflect(-lightDir, normal);
-	vec3 reflectDir = normalize(2 * dot(lightDir, normal) * normal - lightDir);
+	vec3 reflectDir = normalize(2 * dot(lightDir, n) * n - lightDir);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), mat_shininess);
 
 	// atteuation 衰减

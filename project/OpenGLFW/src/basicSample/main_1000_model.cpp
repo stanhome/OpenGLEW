@@ -74,13 +74,12 @@ int main()
 
 			string keyPrefix = "pointLight.";
 			objShader.setVec3(keyPrefix + "pos", s_pointLightPositions[0]);
-			objShader.setVec3(keyPrefix + "ambient", 0.05f);
-			//objShader.setVec3(keyPrefix + "diffuse", 0.8f);
+			objShader.setVec3(keyPrefix + "ambient", 0.1f);
 			objShader.setVec3(keyPrefix + "diffuse", s_pointLightColor[0]);
 			objShader.setVec3(keyPrefix + "specular", 1.0f);
 			objShader.setFloat(keyPrefix + "constant", 1.0f);
-			objShader.setFloat(keyPrefix + "linear", 0.09f);
-			objShader.setFloat(keyPrefix + "quadratic", 0.032f);
+			objShader.setFloat(keyPrefix + "linear", 0.014f); // Distance:325，可以照325单位远的
+			objShader.setFloat(keyPrefix + "quadratic", 0.0007f);
 
 			glm::mat4 objMatrixM = glm::mat4(1.0f);
 			// translate it down so it's at the center of the scene
