@@ -20,7 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
-    <ClCompile Include="src\basicSample\main_1000_model.cpp" />
+    <ClCompile Include="src\basicSample\main_1000_model_tank_example.cpp" />
+    <ClCompile Include="src\renderer\CubeMesh.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\renderer\Model.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="src\common\utils.h" />
     <ClInclude Include="src\mainWrapper.h" />
     <ClInclude Include="src\renderer\Camera.h" />
+    <ClInclude Include="src\renderer\CubeMesh.h" />
     <ClInclude Include="src\renderer\Mesh.h" />
     <ClInclude Include="src\renderer\Model.h" />
     <ClInclude Include="src\renderer\Shader.h" />

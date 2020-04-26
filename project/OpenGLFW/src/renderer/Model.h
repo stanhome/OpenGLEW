@@ -42,4 +42,6 @@ private:
 	std::shared_ptr<Mesh> processMesh(aiMesh *mesh, const aiScene *scene);
 	std::vector<std::shared_ptr<Texture>> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
+	std::string replacePcxImageToPng(const std::string &input);
+
 };

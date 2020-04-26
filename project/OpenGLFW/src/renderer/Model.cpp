@@ -144,7 +144,7 @@ std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial * m
 		}
 		else {
 			// if texture hasn't been loaded already, load it.
-			string fullPath = _directory + "/" + str.C_Str();
+			string fullPath = _directory + "/" + replacePcxImageToPng(str.C_Str());
 			auto tex = make_shared<Texture>(GL_TEXTURE_2D, fullPath);
 			tex->setSamplerName(typeName, i);
 			textures.push_back(tex);
@@ -154,6 +154,19 @@ std::vector<std::shared_ptr<Texture>> Model::loadMaterialTextures(aiMaterial * m
 	}
 
 	return textures;
+}
+
+std::string Model::replacePcxImageToPng(const std::string & input)
+{
+	// replace pcx file to png file
+	std::string newFilePath = input;
+	size_t startPos = newFilePath.rfind(".pcx");
+	if (startPos != std::string::npos)
+	{
+		newFilePath.replace(startPos, strlen(".pcx"), ".png");
+	}
+
+	return newFilePath;
 }
 
 
