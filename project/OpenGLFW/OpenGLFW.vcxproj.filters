@@ -48,11 +48,11 @@
     <ClCompile Include="src\renderer\Model.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\basicSample\main_1000_model_tank_example.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer\CubeMesh.cpp">
       <Filter>src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\advancedSample\main_0101_depthTest.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
