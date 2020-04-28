@@ -11,7 +11,7 @@ public:
 	 * @param target: texture target like GL_TEXTURE_2D
 	 * @param format: texture format like GL_RGBA
 	 */
-	Texture(GLenum target, const std::string &filePath);
+	Texture(GLenum target, const std::string &filePath, GLint wrap = GL_REPEAT);
 
 	static void initStbi();
 
@@ -33,6 +33,8 @@ public:
 private:
 	GLenum _target;
 	GLuint _textureObj;
+
+	GLint _wrap;
 
 	std::string _samplerName;
 };

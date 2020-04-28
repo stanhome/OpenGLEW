@@ -17,8 +17,9 @@ void Texture::initStbi()
 	stbi_set_flip_vertically_on_load(true);
 }
 
-Texture::Texture(GLenum target, const std::string &filePath)
+Texture::Texture(GLenum target, const std::string &filePath, GLint wrap /*= GL_REPEAT*/)
 : _target(target)
+, _wrap(wrap)
 {
 	load(filePath);
 }
@@ -32,8 +33,8 @@ void Texture::load(const std::string &filePath)
 	glGenTextures(1, &_textureObj);
 	glBindTexture(_target, _textureObj);
 	// set the texture wrapping parameters
-	glTexParameteri(_target, GL_TEXTURE_WRAP_S, GL_REPEAT); //GLREPEAT also is default wrapping method
-	glTexParameteri(_target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(_target, GL_TEXTURE_WRAP_S, _wrap); //GL_REPEAT also is default wrapping method
+	glTexParameteri(_target, GL_TEXTURE_WRAP_T, _wrap);
 	// set texture filtering parameters
 	glTexParameteri(_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
