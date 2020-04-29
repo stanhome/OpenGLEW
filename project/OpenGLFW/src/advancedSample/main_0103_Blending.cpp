@@ -82,10 +82,12 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);// by default
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
 	// 3D obj
-	Shader objShader(SHADER_PATH("01_depthTesting.vs"), SHADER_PATH("03_blending_discard.fs"));
+	Shader objShader(SHADER_PATH("01_depthTesting.vs"), SHADER_PATH("03_blending_blend.fs"));
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -135,10 +137,10 @@ int main()
 	// load textures
 	Texture cubeTexture(GL_TEXTURE_2D, "res/imgs/marble.jpg");
 	Texture floorTexture(GL_TEXTURE_2D, "res/imgs/metal.jpg", GL_REPEAT);
-	Texture transparentTexture(GL_TEXTURE_2D, "res/imgs/grass.png", GL_CLAMP_TO_EDGE);
+	Texture transparentTexture(GL_TEXTURE_2D, "res/imgs/blending_transparent_window.png", GL_CLAMP_TO_EDGE);
 
 	//transparent vegetation locations
-	vector<glm::vec3> vegetation{
+	vector<glm::vec3> windowsPos{
 		glm::vec3(-1.5f, 0.0f, -0.48f),
 		glm::vec3(1.5f, 0.0f, 0.51f),
 		glm::vec3(0.0f, 0.0f, 0.7f),
@@ -162,6 +164,15 @@ int main()
 		//input
 		// ------------------------------
 		processInput(window);
+
+		// sort the transparent windows before rendering
+		std::map<float, glm::vec3> sorted;
+		for (unsigned int i = 0; i < windowsPos.size(); ++i)
+		{
+			float distance = glm::length(camera.pos - windowsPos[i]);
+			sorted[distance] = windowsPos[i];
+		}
+
 
 		// Render
 		// ------------------------------
@@ -198,13 +209,13 @@ int main()
 			objShader.setMat4("MVP", objMatrixMVP);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
-			// vegetation
+			// windows(from furthest to nearest)
 			glBindVertexArray(transparentVao);
 			transparentTexture.bind(GL_TEXTURE0);
-			for (unsigned int i = 0; i < vegetation.size(); ++i)
+			for (map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
 			{
 				matrixM = glm::mat4(1.0f);
-				matrixM = glm::translate(matrixM, vegetation[i]);
+				matrixM = glm::translate(matrixM, it->second);
 				objMatrixMVP = matrixP * matrixV * matrixM;
 				objShader.setMat4("MVP", objMatrixMVP);
 				glDrawArrays(GL_TRIANGLES, 0, 6);
