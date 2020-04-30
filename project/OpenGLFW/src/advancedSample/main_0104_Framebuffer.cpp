@@ -142,6 +142,34 @@ int main()
 	screenShader.setInt("screenTexture", 0);
 
 
+	// framebuffer configuration
+	unsigned int framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// create a clolor attachment texture
+	unsigned int textureColorBuffer;
+	glGenTextures(1, &textureColorBuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffer, 0);
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	// use a single renderbuffer object for both a depth AND stencil buffer.
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT);
+	//now actually attach it
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	// now that we actually created the framebuffer and added all attachments
+	// we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		cout << "[E] framebuffer is not complete!" << endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
 		// pre-frame time logic
@@ -159,8 +187,12 @@ int main()
 		// Render
 		// ------------------------------
 		{
+			// bind to framebuffer and draw scene as we normally would to color texture
+			glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+			glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
+
 			// do Rendering
-			glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glm::mat4 matrixP = glm::perspective(glm::radians(camera.fov), (float)WIDTH / HEIGHT, 0.1f, 100.0f);
@@ -192,6 +224,24 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			glBindVertexArray(0);
+
+			//now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+
+		{
+			//render quad
+			// disable depth test to screen-space quad isn't discarded due to depth test.
+			glDisable(GL_DEPTH_TEST);
+
+			// clear all relevant buffers
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			screenShader.use();
+			glBindVertexArray(quadVao);
+			glBindTexture(GL_TEXTURE_2D, textureColorBuffer);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
