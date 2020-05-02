@@ -86,7 +86,7 @@ int main()
 
 	// 3D obj
 	Shader objShader(SHADER_PATH("01_depthTesting.vs"), SHADER_PATH("01_depthTesting.fs"));
-	Shader screenShader(SHADER_PATH("05_framebuffer.vs"), SHADER_PATH("05_framebuffer.fs"));
+	Shader screenShader(SHADER_PATH("05_framebuffer.vs"), SHADER_PATH("05_post_effect_kernel_effect.fs"));
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
