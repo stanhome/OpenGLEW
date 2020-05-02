@@ -133,7 +133,7 @@ int main()
 
 	// load textures
 	Texture cubeTexture(GL_TEXTURE_2D, "res/imgs/container.jpg");
-	Texture floorTexture(GL_TEXTURE_2D, "res/imgs/metal.jpg");
+	Texture floorTexture(GL_TEXTURE_2D, "res/imgs/metal.png");
 
 	objShader.use();
 	objShader.setInt("_mainTex", 0);
