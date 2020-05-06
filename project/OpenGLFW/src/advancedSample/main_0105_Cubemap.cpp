@@ -10,47 +10,47 @@ using namespace std;
 
 static float s_cubeVertices[] = {
 	// positions          // texture Coords
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 
 static float s_skyboxVertices[] = {
@@ -111,8 +111,10 @@ int main()
 	//glDepthFunc(GL_ALWAYS);// always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 
 	// 3D obj
-	Shader objShader(SHADER_PATH("02_stencil_testing.vs"), SHADER_PATH("02_stencil_testing.fs"));
+	Shader objShader(SHADER_PATH("06_skybox_reflective.vs"), SHADER_PATH("06_skybox_reflective.fs"));
 	Shader skyboxShader(SHADER_PATH("06_skybox.vs"), SHADER_PATH("06_skybox.fs"));
+
+	Model backpack("res/objects/backpack/backpack.obj");
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -124,11 +126,11 @@ int main()
 	glBindVertexArray(cubeVao);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(s_cubeVertices), &s_cubeVertices, GL_STATIC_DRAW);
-	unsigned int stride = 5 * sizeof(float);
+	unsigned int stride = 6 * sizeof(float);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
 
 	// skybox VAO
@@ -155,7 +157,7 @@ int main()
 	unsigned int cubemapTexture = loadCubemap(faces);
 
 	objShader.use();
-	objShader.setInt("_mainTex", 0);
+	objShader.setInt("skybox", 0);
 
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
@@ -185,14 +187,19 @@ int main()
 			glm::mat4 matrixM = glm::mat4(1.0f);
 
 			objShader.use();
+			glm::mat4 objMatrixMVP = matrixP * matrixV * matrixM;
+			objShader.setMat4("M", matrixM);
+			objShader.setMat4("MVP", objMatrixMVP);
+			objShader.setVec3("cameraPos", camera.pos);
 
 			//cubes
-			glBindVertexArray(cubeVao);
-			cubeTexture.bind(GL_TEXTURE0);
-			glm::mat4 objMatrixMVP = matrixP * matrixV * matrixM;
-			objShader.setMat4("MVP", objMatrixMVP);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			glBindVertexArray(0);
+			//glBindVertexArray(cubeVao);
+			//glActiveTexture(GL_TEXTURE0);
+			//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			//glBindVertexArray(0);
+
+			backpack.draw(objShader);
 
 			// draw skybox as last
 			glDepthFunc(GL_LEQUAL);

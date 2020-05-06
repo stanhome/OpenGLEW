@@ -50,7 +50,7 @@ GLFWwindow *createWindow(int w, int h) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
 
-	GLFWwindow *window = glfwCreateWindow(w, h, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(w, h, "OpenGL Demo", nullptr, nullptr);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
