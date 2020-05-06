@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
-    <ClCompile Include="src\advancedSample\main_0104_Framebuffer.cpp" />
+    <ClCompile Include="src\advancedSample\main_0105_Cubemap.cpp" />
     <ClCompile Include="src\renderer\CubeMesh.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\renderer\Model.cpp" />
