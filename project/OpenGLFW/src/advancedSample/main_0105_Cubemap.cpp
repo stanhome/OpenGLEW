@@ -111,10 +111,10 @@ int main()
 	//glDepthFunc(GL_ALWAYS);// always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 
 	// 3D obj
-	Shader objShader(SHADER_PATH("06_skybox_reflective.vs"), SHADER_PATH("06_skybox_reflective.fs"));
+	Shader objShader(SHADER_PATH("06_skybox_reflective.vs"), SHADER_PATH("06_skybox_refraction.fs"));
 	Shader skyboxShader(SHADER_PATH("06_skybox.vs"), SHADER_PATH("06_skybox.fs"));
 
-	Model backpack("res/objects/backpack/backpack.obj");
+	//Model backpack("res/objects/backpack/backpack.obj");
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -193,13 +193,13 @@ int main()
 			objShader.setVec3("cameraPos", camera.pos);
 
 			//cubes
-			//glBindVertexArray(cubeVao);
-			//glActiveTexture(GL_TEXTURE0);
-			//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
-			//glBindVertexArray(0);
+			glBindVertexArray(cubeVao);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glBindVertexArray(0);
 
-			backpack.draw(objShader);
+			//backpack.draw(objShader);
 
 			// draw skybox as last
 			glDepthFunc(GL_LEQUAL);
