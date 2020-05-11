@@ -51,7 +51,7 @@
     <ClCompile Include="src\renderer\CubeMesh.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\advancedSample\main_0105_Cubemap.cpp">
+    <ClCompile Include="src\advancedSample\main_0106_BuiltIn.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
