@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
-    <ClCompile Include="src\advancedSample\main_0106_BuiltIn.cpp" />
+    <ClCompile Include="src\advancedSample\main_0109_GeometryShader.cpp" />
     <ClCompile Include="src\renderer\CubeMesh.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\renderer\Model.cpp" />

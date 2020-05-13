@@ -10,7 +10,7 @@ class Shader
 {
 public:
 	GLuint id;
-	Shader(const char *vertexPath, const char *fragmentPath);
+	Shader(const char *vertexPath, const char *fragmentPath, const char *gemoetryPath = nullptr);
 	Shader(const GLchar *vertexCode, const GLchar *fragmentCode, bool isCode);
 
 	void use();
@@ -26,7 +26,7 @@ public:
 	void setMat4(const std::string &name, const glm::mat4 &val) const;
 
 protected:
-	void init(const GLchar *vShaderCode, const GLchar *fShaderCode);
+	void init(const GLchar *vShaderCode, const GLchar *fShaderCode, const GLchar *gShaderCode = nullptr);
 
 private:
 	std::string readShaderSrc(const char *path) const;
@@ -34,6 +34,7 @@ private:
 private:
 	std::string _vertPath;
 	std::string _fragPath;
+	std::string _geometryPath;
 };
 
 inline void Shader::setBool(const std::string &name, bool value) const {

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Shader::Shader(const char *vertexPath, const char *fragmentPath)
+Shader::Shader(const char *vertexPath, const char *fragmentPath, const char *gemoetryPath /*= nullptr*/)
 	: _vertPath(vertexPath)
 	, _fragPath(fragmentPath)
 {
@@ -17,18 +17,26 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath)
 	// 直接使用相对目录也可以(放到工作目录下）
 	std::string vCode = readShaderSrc(vertexPath);
 	std::string fCode = readShaderSrc(fragmentPath);
+	if (gemoetryPath == nullptr)
+	{
+		init(vCode.c_str(), fCode.c_str());
+	}
+	else {
+		_geometryPath = std::string(gemoetryPath);
+		std::string gCode = readShaderSrc(gemoetryPath);
+		init(vCode.c_str(), fCode.c_str(), gCode.c_str());
+	}
 
-	init(vCode.c_str(), fCode.c_str());
 }
 
 Shader::Shader(const GLchar *vertexCode, const GLchar *fragmentCode, bool isCode) {
 	init(vertexCode, fragmentCode);
 }
 
-void Shader::init(const GLchar *vShaderCode, const GLchar *fShaderCode)
+void Shader::init(const GLchar *vShaderCode, const GLchar *fShaderCode, const GLchar *gShaderCode /* = nullptr*/)
 {
 	// 2. compile shader code.
-	GLuint vertex, fragment;
+	GLuint vertex, fragment, geometry;
 
 	auto checkIsSuccessFunc = [](GLuint shaderObjId, GLenum pname, const std::string &title) -> void {
 		// Print compile errors if any
@@ -67,15 +75,28 @@ void Shader::init(const GLchar *vShaderCode, const GLchar *fShaderCode)
 	glCompileShader(fragment);
 	checkIsSuccessFunc(fragment, GL_COMPILE_STATUS, _fragPath + ", shader fragment compilation");
 
+	// geometry shader
+	if (gShaderCode != nullptr)
+	{
+		geometry = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometry, 1, &gShaderCode, NULL);
+		glCompileShader(geometry);
+		checkIsSuccessFunc(geometry, GL_COMPILE_STATUS, _geometryPath + ", shader geometry compilation.");
+	}
+
 	// shader program
 	id = glCreateProgram();
 	glAttachShader(id, vertex);
 	glAttachShader(id, fragment);
+	if (gShaderCode != nullptr)
+		glAttachShader(id, geometry);
 	glLinkProgram(id);
 	checkIsSuccessFunc(id, GL_LINK_STATUS, "shader program linking");
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+	if (gShaderCode != nullptr)
+		glDeleteShader(geometry);
 }
 
 void Shader::use()
