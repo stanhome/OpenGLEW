@@ -51,7 +51,7 @@
     <ClCompile Include="src\renderer\CubeMesh.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\advancedSample\main_0109_GeometryShader_showNormal.cpp">
+    <ClCompile Include="src\advancedSample\main_0110_GPU-instance.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

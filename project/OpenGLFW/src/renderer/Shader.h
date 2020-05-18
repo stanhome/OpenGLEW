@@ -20,6 +20,7 @@ public:
 	void setInt(const std::string &name, int value) const;
 	void setFloat(const std::string &name, float value) const;
 
+	void setVec2(const std::string &name, const glm::vec2 &val) const;
 	void setVec3(const std::string &name, const glm::vec3 &val) const;
 	void setVec3(const std::string &name, float x, float y, float z) const;
 	void setVec3(const std::string &name, float val) const;
@@ -47,6 +48,11 @@ inline void Shader::setInt(const std::string &name, int value) const {
 
 inline void Shader::setFloat(const std::string &name, float value) const {
 	glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+}
+
+inline void Shader::setVec2(const std::string & name, const glm::vec2 & val) const
+{
+	glUniform2fv(glGetUniformLocation(id, name.c_str()), 1, &val[0]);
 }
 
 inline void Shader::setVec3(const std::string &name, const glm::vec3 &val) const {
