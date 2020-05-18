@@ -43,11 +43,12 @@ int main()
 		}
 	}
 
-	objShader.use();
-	for (unsigned int i = 0; i < 100; i++)
-	{
-		objShader.setVec2("offsets[" + std::to_string(i) + "]", translations[i]);
-	}
+	// store isntance data in an array buffer
+	unsigned int instancedVbo;
+	glGenBuffers(1, &instancedVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, instancedVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	unsigned int quadVao, quadVbo;
 	glGenVertexArrays(1, &quadVao);
@@ -61,7 +62,16 @@ int main()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(2 * sizeof(float)));
 
+	// also set instance data
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, instancedVbo); // this attribute comes from a different vertex buffer
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glVertexAttribDivisor(2, 1); // tel OpenGL this is an instanced vertex attribute.
+
 	glBindVertexArray(0);
+
+
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
