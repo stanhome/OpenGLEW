@@ -21,7 +21,8 @@ int main()
 	if (window == nullptr) return -1;
 
 	// 3D obj
-	Shader objShader(SHADER_PATH("10_planet-with-common.vs"), SHADER_PATH("10_planet-with-common.fs"));
+	Shader planetShader(SHADER_PATH("10_planet-with-common.vs"), SHADER_PATH("10_planet-with-common.fs"));
+	Shader rockShader(SHADER_PATH("10_planet_with-GPU-instance.vs"), SHADER_PATH("10_planet-with-common.fs"));
 	Model rock("res/objects/rock/rock.obj");
 	Model planet("res/objects/planet/planet.obj");
 
@@ -55,8 +56,34 @@ int main()
 		matrixMArray[i] = M;
 	}
 
-	// draw in wireframe
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// set transformation matrices as an instance vertex attribute( with divisor 1)
+	// 顶点属性最大的数据 >= 一个vec4，所以 mat4 要处理为4个顶点属性。 
+	// 当mat4 设置为3的时候，矩阵每一列的顶点属性位置就是3、4、5、6
+	unsigned int vertexInstanceBuffer;
+	glGenBuffers(1, &vertexInstanceBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexInstanceBuffer);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &matrixMArray[0], GL_STATIC_DRAW);
+	for (unsigned int i = 0; i < rock.meshes.size(); ++i)
+	{
+		unsigned int vao = rock.meshes[i]->vao;
+		glBindVertexArray(vao);
+		// set attribute pointers for matrix(4 times vec4)
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 *sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+
+		glBindVertexArray(0);
+	}
 
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
@@ -82,20 +109,27 @@ int main()
 			glm::mat4 matrixP = glm::perspective(glm::radians(camera.fov), (float)WIDTH / HEIGHT, 0.1f, 1000.0f);
 
 			// draw planet
-			objShader.use();
+			planetShader.use();
 			glm::mat4 matrixM = glm::mat4(1.0f);
 			matrixM = glm::translate(matrixM, glm::vec3(0.0f, -3.0f, 0.0f));
 			matrixM = glm::scale(matrixM, glm::vec3(4.0f));
 			glm::mat4 matrixMVP = matrixP * matrixV * matrixM;
-			objShader.setMat4("MVP", matrixMVP);
-			planet.draw(objShader);
+			planetShader.setMat4("MVP", matrixMVP);
+			planet.draw(planetShader);
 
 			// draw meteorites
-			for (unsigned int i = 0; i < amount; ++i)
+			rockShader.use();
+			rockShader.setInt("tex_diffuse0", 0);
+			glm::mat4 matrixVP = matrixP * matrixV;
+			rockShader.setMat4("VP", matrixVP);
+			for (unsigned int i = 0; i < rock.meshes.size(); ++i)
 			{
-				matrixMVP = matrixP * matrixV * matrixMArray[i];
-				objShader.setMat4("MVP", matrixMVP);
-				rock.draw(objShader);
+				std::shared_ptr<Mesh> mesh = rock.meshes[i];
+
+				mesh->textures[0]->bind(GL_TEXTURE0);
+				glBindVertexArray(mesh->vao);
+				glDrawElementsInstanced(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0, amount);
+				glBindVertexArray(0);
 			}
 		}
 
