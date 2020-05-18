@@ -8,18 +8,12 @@
 
 using namespace std;
 
-static float s_quadVertices[] = {
-	// positions     // colors
-	-0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-	0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-	-0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
-
-	-0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-	0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-	0.05f,  0.05f,  0.0f, 1.0f, 1.0f
-};
-
 #define SHADER_PATH(SHADER_NAME) "res/shaders/03_advancedOpenGL/" SHADER_NAME
+
+// return [-offset, offset), offset should be positive number.
+float generateRandomScope(float offset) {
+	return rand() % (int)(2 * offset * 100) / 100.0f - offset;
+}
 
 int main()
 {
@@ -27,51 +21,39 @@ int main()
 	if (window == nullptr) return -1;
 
 	// 3D obj
-	Shader objShader(SHADER_PATH("10_GPU-instance.vs"), SHADER_PATH("10_GPU-instance.fs"));
+	Shader objShader(SHADER_PATH("10_planet-with-common.vs"), SHADER_PATH("10_planet-with-common.fs"));
+	Model rock("res/objects/rock/rock.obj");
+	Model planet("res/objects/planet/planet.obj");
 
-	glm::vec2 translations[100];
-	int index = 0;
-	float offset =  0.1f;
-	for (int y = -10; y < 10; y += 2)
+	// generate a large list of semi-random model transformation matrices
+	unsigned int amount = 1000;
+	glm::mat4 *matrixMArray;
+	matrixMArray = new glm::mat4[amount];
+	srand(glfwGetTime());
+	float radius = 50.0;
+	float offset = 2.5f;
+	for (unsigned int i = 0; i < amount; ++i)
 	{
-		for (int x = -10; x < 10; x += 2)
-		{
-			glm::vec2 translation;
-			translation.x = (float)x / 10.0f + offset;
-			translation.y = (float)y / 10.0f + offset;
-			translations[index++] = translation;
-		}
+		glm::mat4 M = glm::mat4(1.0f);
+
+		// 1. translation displace along circle with 'radius' in range [-offset, offset]
+		float angle = (float)i / (float)amount * 360.0f;
+		float x = sin(angle) * radius + generateRandomScope(offset);
+		// keep height of asteroid field smaller compared to width of x and z
+		float y = 0.4f * generateRandomScope(offset);
+		float z = cos(angle) * radius + generateRandomScope(offset);
+		M = glm::translate(M, glm::vec3(x, y, z));
+
+		// 2. scale between 0.05 and 0.25
+		float scale = (rand() % 20) / 100.0f + 0.05;
+		M = glm::scale(M, glm::vec3(scale));
+
+		// 3 rotation: add random rotation around a (semi)randomly picked rotation axis vector
+		float rotAngle = rand() % 360;
+		M = glm::rotate(M, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+		matrixMArray[i] = M;
 	}
-
-	// store isntance data in an array buffer
-	unsigned int instancedVbo;
-	glGenBuffers(1, &instancedVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, instancedVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	unsigned int quadVao, quadVbo;
-	glGenVertexArrays(1, &quadVao);
-	glBindVertexArray(quadVao);
-
-	glGenBuffers(1, &quadVbo);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(s_quadVertices), s_quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(2 * sizeof(float)));
-
-	// also set instance data
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, instancedVbo); // this attribute comes from a different vertex buffer
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glVertexAttribDivisor(2, 1); // tel OpenGL this is an instanced vertex attribute.
-
-	glBindVertexArray(0);
-
-
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -96,9 +78,25 @@ int main()
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			glm::mat4 matrixV = camera.getViewMatrix();
+			glm::mat4 matrixP = glm::perspective(glm::radians(camera.fov), (float)WIDTH / HEIGHT, 0.1f, 1000.0f);
+
+			// draw planet
 			objShader.use();
-			glBindVertexArray(quadVao);
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
+			glm::mat4 matrixM = glm::mat4(1.0f);
+			matrixM = glm::translate(matrixM, glm::vec3(0.0f, -3.0f, 0.0f));
+			matrixM = glm::scale(matrixM, glm::vec3(4.0f));
+			glm::mat4 matrixMVP = matrixP * matrixV * matrixM;
+			objShader.setMat4("MVP", matrixMVP);
+			planet.draw(objShader);
+
+			// draw meteorites
+			for (unsigned int i = 0; i < amount; ++i)
+			{
+				matrixMVP = matrixP * matrixV * matrixMArray[i];
+				objShader.setMat4("MVP", matrixMVP);
+				rock.draw(objShader);
+			}
 		}
 
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
@@ -109,6 +107,8 @@ int main()
 			glfwPollEvents();
 		}
 	}
+
+	delete[] matrixMArray;
 
 	// glfw: terminate, clearing all previously allocated GLFW resource.
 	glfwTerminate();
