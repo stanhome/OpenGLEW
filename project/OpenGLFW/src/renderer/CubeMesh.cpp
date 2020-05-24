@@ -10,13 +10,13 @@ using namespace std;
 
 CubeMesh::CubeMesh()
 {
-	setupMesh();
+	setupMesh(Type::pos);
 }
 
 CubeMesh::CubeMesh(std::vector<std::shared_ptr<Texture>> textures)
 	: textures(textures)
 {
-	setupMesh();
+	setupMesh(Type::posNormalUV);
 }
 
 CubeMesh::~CubeMesh()
@@ -45,9 +45,54 @@ void CubeMesh::draw(Shader shader)
 	glActiveTexture(GL_TEXTURE0);
 }
 
-void CubeMesh::setupMesh()
+void CubeMesh::setupMesh(Type t /*= Type::pos*/)
 {
-	static const GLfloat s_cubeVertices[] = {
+	static const float s_cubePos[] = {
+		// positions       
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f,  0.5f,
+		0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f, -0.5f,
+		0.5f,  0.5f,  0.5f,
+		0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f
+	};
+
+	static const GLfloat s_cubePosNormalUv[] = {
 		// positions          // normals           // texture coords
 		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 		0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
@@ -93,6 +138,23 @@ void CubeMesh::setupMesh()
 	};
 
 
+	const float *cubeVertices = nullptr;
+	unsigned int cubeMemSize = 0;
+
+	switch (t)
+	{
+	default:
+	case Type::pos:
+			cubeVertices = s_cubePos;
+			cubeMemSize = sizeof(s_cubePos);
+			break;
+	case Type::posNormal:
+	case Type::posNormalUV:
+		cubeVertices = s_cubePosNormalUv;
+		cubeMemSize = sizeof(s_cubePosNormalUv);
+		break;
+	}
+
 	// create buffers/arrays
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &_vbo);
@@ -100,19 +162,32 @@ void CubeMesh::setupMesh()
 	glBindVertexArray(vao);
 	// load data into vertex buffers
 	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(s_cubeVertices), s_cubeVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, cubeMemSize, cubeVertices, GL_STATIC_DRAW);
 
 	// set the vertex attribute pointers
-	unsigned int stride = 8 * sizeof(GL_FLOAT);
+	unsigned int floatCount = 3;
+	if (t >= Type::posNormal) floatCount += 3;
+	if (t >= Type::posNormalUV) floatCount += 2;
+
+	unsigned int stride = floatCount * sizeof(GL_FLOAT);
+
 	// vertex positions
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-	// vertex normals
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(GLfloat)));
-	// vertex texture coords
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(GLfloat)));
+
+	if (t >= Type::posNormal)
+	{
+		// vertex normals
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(GLfloat)));
+	}
+
+	if (t >= Type::posNormalUV)
+	{
+		// vertex texture coords
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(GLfloat)));
+	}
 
 	glBindVertexArray(0);
 }

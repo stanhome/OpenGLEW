@@ -16,6 +16,13 @@ public:
 	std::vector<std::shared_ptr<Texture>> textures;
 	unsigned int vao;
 
+	enum Type
+	{
+		pos = 0,
+		posNormal,
+		posNormalUV,
+	};
+
 public:
 	CubeMesh();
 	CubeMesh(std::vector<std::shared_ptr<Texture>> textures);
@@ -28,5 +35,5 @@ private:
 
 private:
 	// initializes all the buffer objects/arrays
-	void setupMesh();
+	void setupMesh(Type t = Type::pos);
 };
