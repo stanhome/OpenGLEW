@@ -44,7 +44,7 @@ GLFWwindow *createWindow(int w, int h) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// 告诉GLFW我们使用的是核心模式(Core-profile)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	//glfwWindowHint(GLFW_SAMPLES, 4);
 
 #ifdef __APPLE__
 	// 如果使用的是Mac OS X系统，你还需要加下面这行代码到你的初始化代码中这些配置才能起作用：
