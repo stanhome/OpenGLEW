@@ -16,6 +16,7 @@ int main()
 	if (window == nullptr) return -1;
 
 	Shader cubeShader(SHADER_PATH("11_cube_default.vs"), SHADER_PATH("11_cube_default.fs"));
+	Shader screenShader(SHADER_PATH("11_MSAA_postProcess.vs"), SHADER_PATH("11_MSAA_postProcess.fs"));
 
 	// 3D obj
 	CubeMesh cubeObj;
@@ -31,7 +32,7 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 
 	glBindVertexArray(0);
 
@@ -59,6 +60,29 @@ int main()
 		std::cout << "[E] framebuffer is not complete for multisampled" << std::endl;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// config second post-processing framebuffer
+	unsigned int intermediateFbo;
+	glGenFramebuffers(1, &intermediateFbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, intermediateFbo);
+
+	// create a color attachment texture
+	unsigned int screenTexture;
+	glGenTextures(1, &screenTexture);
+	glBindTexture(GL_TEXTURE_2D, screenTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// we only need a color buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "[E] Intermediate framebuffer is not complete" << std::endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	screenShader.use();
+	screenShader.setInt("screenTexture", 0);
 
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
@@ -89,7 +113,6 @@ int main()
 			glm::mat4 matrixV = camera.getViewMatrix();
 			glm::mat4 matrixP = glm::perspective(glm::radians(camera.fov), (float)WIDTH / HEIGHT, 0.1f, 1000.0f);
 
-			// draw planet
 			cubeShader.use();
 			glm::mat4 matrixM = glm::mat4(1.0f);
 			matrixM = glm::translate(matrixM, glm::vec3(0.0f, -3.0f, 0.0f));
@@ -103,8 +126,23 @@ int main()
 		{
 			// render screen quad
 			// 2. now blit multisampled buffers to normal color buffer of intermediate 
-			
+			// Resolve AA
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFbo);
+			glBlitFramebuffer(0, 0, WIDTH, HEIGHT, 0, 0, WIDTH, HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
+			// 3. now render quad with scene's visuals as its texture iamge
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+			glDisable(GL_DEPTH_TEST);
+			// draw screen QUAD
+			screenShader.use();
+			glBindVertexArray(quadVao);
+			glActiveTexture(GL_TEXTURE0);
+			// use the now resolved color attachment as the quad's texture
+			glBindTexture(GL_TEXTURE_2D, screenTexture);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
