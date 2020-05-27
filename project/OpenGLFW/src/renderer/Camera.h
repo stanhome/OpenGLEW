@@ -56,6 +56,18 @@ public:
 		return glm::lookAt(pos, pos + forward, up);
 	}
 
+	void lockCamera() {
+		_isLock = true;
+	}
+
+	void unlockCamera() {
+		_isLock = false;
+	}
+
+	void switchLock() {
+		_isLock = !_isLock;
+	}
+
 	// process input received from any keyboard-like input system.
 	// accepts input parameter in the form of camera defined ENUM
 	void processKeyboard(CameraMovement direction, float deltaTime) {
@@ -70,6 +82,8 @@ public:
 	// process input received from a mouse input system.
 	// Expects the offset value in both the x and y direction.
 	void processMouseMovement(float xOffset, float yOffset, bool isConstrainPitch = true) {
+		if (_isLock) return;
+
 		xOffset *= mouseSensitivity;
 		yOffset *= mouseSensitivity;
 
@@ -93,6 +107,9 @@ public:
 		else if (fov < 1.0f) fov = 1.0f;
 		else if (fov > 45.0f) fov = 45.0f;
 	}
+
+private:
+	bool _isLock = false;
 
 private:
 	// calculates the forward vector from the camera's (updated) Euler Angles

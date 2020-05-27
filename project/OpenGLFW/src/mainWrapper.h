@@ -44,7 +44,7 @@ GLFWwindow *createWindow(int w, int h) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// 告诉GLFW我们使用的是核心模式(Core-profile)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//glfwWindowHint(GLFW_SAMPLES, 4);
+	//glfwWindowHint(GLFW_SAMPLES, 8);
 
 #ifdef __APPLE__
 	// 如果使用的是Mac OS X系统，你还需要加下面这行代码到你的初始化代码中这些配置才能起作用：
@@ -132,6 +132,8 @@ void scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 typedef void OnProcessInput(GLFWwindow *window);
 static OnProcessInput *s_processInputFunc = nullptr;
 
+bool s_isLPressed = false;
+
 void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -144,6 +146,13 @@ void processInput(GLFWwindow *window) {
 		camera.processKeyboard(LEFT, s_deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.processKeyboard(RIGHT, s_deltaTime);
+
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) s_isLPressed = true;
+	if (s_isLPressed && glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE)
+	{
+		s_isLPressed = false;
+		camera.switchLock();
+	}
 
 	if (s_processInputFunc)
 	{

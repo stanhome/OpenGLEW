@@ -31,6 +31,9 @@
     <Filter Include="src\common">
       <UniqueIdentifier>{49c51144-26a0-46f8-b231-e2bc8bbfe9f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\renderer\mesh">
+      <UniqueIdentifier>{0c0eec66-9acc-4eb4-b7ec-59a4a4c28e9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c">
@@ -42,17 +45,20 @@
     <ClCompile Include="src\renderer\Texture.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\Mesh.cpp">
-      <Filter>src\renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer\Model.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\CubeMesh.cpp">
-      <Filter>src\renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\advancedSample\main_0111_Antialiasing_MSAA.cpp">
+    <ClCompile Include="src\advancedLighting\main_01_Blinn-Phong.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\CubeMesh.cpp">
+      <Filter>src\renderer\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\Mesh.cpp">
+      <Filter>src\renderer\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\PlaneMesh.cpp">
+      <Filter>src\renderer\mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,14 +89,17 @@
     <ClInclude Include="src\common\commonDefine.h">
       <Filter>src\common</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Mesh.h">
-      <Filter>src\renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer\Model.h">
       <Filter>src\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\CubeMesh.h">
-      <Filter>src\renderer</Filter>
+      <Filter>src\renderer\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\Mesh.h">
+      <Filter>src\renderer\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\PlaneMesh.h">
+      <Filter>src\renderer\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
