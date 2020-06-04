@@ -1,27 +1,52 @@
-#include <iostream>
+﻿#include <iostream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+
+static const float s_halfSize = 1.0f;
+
 static const GLfloat s_vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	 0.0f,  0.5f, 0.0f,
+	-s_halfSize, -s_halfSize, 0.0f,
+	s_halfSize, -s_halfSize, 0.0f,
+	-s_halfSize,  s_halfSize, 0.0f,
+
+	-s_halfSize, s_halfSize, 0.0f,
+	s_halfSize, -s_halfSize, 0.0f,
+	s_halfSize,  s_halfSize, 0.0f,
 };
 
-const char *SHADER_VERTEX = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
+const char *SHADER_VERTEX = R"(
+#version 430 core 
+layout (location = 0) in vec3 aPos;
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+}
+)";
 
-const char *SHADER_FRAGMENT = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\0";
+const char *SHADER_FRAGMENT = R"(
+#version 430 core
+#extension GL_NV_shader_thread_group : require
+
+uniform uint  gl_WarpSizeNV;	// the total number of thread in a warp
+uniform uint  gl_WarpsPerSMNV;	// the maximum number of warp executing on a SM
+uniform uint  gl_SMCountNV;		// the number of SM on the GPU
+
+in uint  gl_WarpIDNV;		// hold the warp id of the executing thread
+in uint  gl_SMIDNV;			// hold the SM id of the executing thread，range [0, gl_SMCountNV - 1]
+in uint  gl_ThreadInWarpNV;	// hold the id of the thread within the thread group(or warp)，range [0, gl_WarpSizeNV - 1]
+
+out vec4 FragColor;
+void main()
+{
+    // SM id
+	//float SMCountNV = gl_SMCountNV;
+	//float lightness = gl_SMIDNV / SMCountNV;
+	//FragColor = vec4(lightness, 1);
+	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+}
+)";
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 //void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -81,11 +106,11 @@ void buildShaders()
 int main()
 {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// ����GLFW����ʹ�õ��Ǻ���ģʽ(Core-profile)
+	// 锟斤拷锟斤拷GLFW锟斤拷锟斤拷使锟矫碉拷锟角猴拷锟斤拷模式(Core-profile)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// ���ʹ�õ���Mac OS Xϵͳ���㻹��Ҫ���������д��뵽��ĳ�ʼ����������Щ���ò��������ã�
+	// 锟斤拷锟绞癸拷玫锟斤拷锟組ac OS X系统锟斤拷锟姐还锟斤拷要锟斤拷锟斤拷锟斤拷锟斤拷锟叫达拷锟诫到锟斤拷某锟绞硷拷锟斤拷锟斤拷锟斤拷锟斤拷锟叫╋拷锟斤拷貌锟斤拷锟斤拷锟斤拷锟斤拷茫锟?
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
@@ -160,7 +185,7 @@ int main()
 			// do Rendering
 			glUseProgram(s_shaderProgram);
 			glBindVertexArray(vao);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glBindVertexArray(0);
 		}
 		
