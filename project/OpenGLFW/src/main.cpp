@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 static const float s_halfSize = 1.0f;
 
 static const GLfloat s_vertices[] = {
@@ -35,16 +34,24 @@ uniform uint  gl_SMCountNV;		// the number of SM on the GPU
 
 in uint  gl_WarpIDNV;		// hold the warp id of the executing thread
 in uint  gl_SMIDNV;			// hold the SM id of the executing thread，range [0, gl_SMCountNV - 1]
-in uint  gl_ThreadInWarpNV;	// hold the id of the thread within the thread group(or warp)，range [0, gl_WarpSizeNV - 1]
+in uint  gl_ThreadInWarpNV;	// hold the id of the thread within the thread group(or warp)，range [0, gl_WarpSizeNV -1]
 
 out vec4 FragColor;
 void main()
 {
     // SM id
-	//float SMCountNV = gl_SMCountNV;
-	//float lightness = gl_SMIDNV / SMCountNV;
-	//FragColor = vec4(lightness, 1);
-	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+	float WarpSize = gl_WarpSizeNV;
+	float WarpsPerSM = gl_WarpsPerSMNV;
+	float SMCountNV = gl_SMCountNV;
+
+	float smIdColor = gl_SMIDNV / SMCountNV;
+	float warpIdColor = gl_WarpIDNV / WarpsPerSM;
+	float threadIdColor = gl_ThreadInWarpNV / WarpSize;
+
+	vec3 col = vec3(threadIdColor);
+	FragColor = vec4(col, 1);
+
+	//FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
 }
 )";
 
@@ -108,12 +115,12 @@ int main()
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// 锟斤拷锟斤拷GLFW锟斤拷锟斤拷使锟矫碉拷锟角猴拷锟斤拷模式(Core-profile)
+	//(Core-profile)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// 锟斤拷锟绞癸拷玫锟斤拷锟組ac OS X系统锟斤拷锟姐还锟斤拷要锟斤拷锟斤拷锟斤拷锟斤拷锟叫达拷锟诫到锟斤拷某锟绞硷拷锟斤拷锟斤拷锟斤拷锟斤拷锟叫╋拷锟斤拷貌锟斤拷锟斤拷锟斤拷锟斤拷茫锟?
+	// for Mac OS X
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(1920, 1080, "OpenGL Demo", nullptr, nullptr);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -210,5 +217,3 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
 //	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 //		glfwSetWindowShouldClose(window, GL_TRUE);
 //}
-
-
