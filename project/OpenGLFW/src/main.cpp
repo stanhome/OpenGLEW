@@ -17,10 +17,30 @@ static const GLfloat s_vertices[] = {
 
 const char *SHADER_VERTEX = R"(
 #version 430 core 
+#extension GL_NV_shader_thread_group : require
+
+uniform uint  gl_WarpSizeNV;	// the total number of thread in a warp
+uniform uint  gl_WarpsPerSMNV;	// the maximum number of warp executing on a SM
+uniform uint  gl_SMCountNV;		// the number of SM on the GPU
+
+in uint  gl_WarpIDNV;		// hold the warp id of the executing thread
+in uint  gl_SMIDNV;			// hold the SM id of the executing thread，range [0, gl_SMCountNV - 1]
+in uint  gl_ThreadInWarpNV;	// hold the id of the thread within the thread group(or warp)，range [0, gl_WarpSizeNV -1]
+
 layout (location = 0) in vec3 aPos;
+out vec3 vertexColor;
 void main()
 {
+	float WarpSize = gl_WarpSizeNV;
+	float WarpsPerSM = gl_WarpsPerSMNV;
+	float SMCountNV = gl_SMCountNV;
+
+	float smIdColor = gl_SMIDNV / SMCountNV;
+	float warpIdColor = gl_WarpIDNV / WarpsPerSM;
+	float threadIdColor = gl_ThreadInWarpNV / WarpSize;
+
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	vertexColor = vec3(threadIdColor);
 }
 )";
 
@@ -36,6 +56,7 @@ in uint  gl_WarpIDNV;		// hold the warp id of the executing thread
 in uint  gl_SMIDNV;			// hold the SM id of the executing thread，range [0, gl_SMCountNV - 1]
 in uint  gl_ThreadInWarpNV;	// hold the id of the thread within the thread group(or warp)，range [0, gl_WarpSizeNV -1]
 
+in vec3 vertexColor;
 out vec4 FragColor;
 void main()
 {
@@ -49,9 +70,8 @@ void main()
 	float threadIdColor = gl_ThreadInWarpNV / WarpSize;
 
 	vec3 col = vec3(threadIdColor);
-	FragColor = vec4(col, 1);
-
-	//FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+	//FragColor = vec4(col, 1);
+	FragColor = vec4(vertexColor, 1);
 }
 )";
 
@@ -120,7 +140,8 @@ int main()
 	// for Mac OS X
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	GLFWwindow *window = glfwCreateWindow(1920, 1080, "OpenGL Demo", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(800, 600, "OpenGL Demo", nullptr, nullptr);
+	//GLFWwindow *window = glfwCreateWindow(1920, 1080, "OpenGL Demo", nullptr, nullptr);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
