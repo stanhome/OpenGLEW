@@ -180,14 +180,22 @@ int main()
 		// send light relevant uniforms
 		for (unsigned int i = 0; i < lightPosVec.size(); ++i)
 		{
+			const glm::vec3 &lightColor = lightColorVec[i];
 			std::string lightsNamePrefixInShader = "lights[" + std::to_string(i) + "].";
 			shaderLightingPass.setVec3(lightsNamePrefixInShader + "pos", lightPosVec[i]);
-			shaderLightingPass.setVec3(lightsNamePrefixInShader + "color", lightColorVec[i]);
+			shaderLightingPass.setVec3(lightsNamePrefixInShader + "color", lightColor);
 			// update attenuation parameters and calculate radius
+			const float constant = 1.0; // Note that we don't send this to the shader, we assume it is always 1.0(in over case)
 			const float linear = 0.7;
 			const float quadratic = 1.8;
 			shaderLightingPass.setFloat(lightsNamePrefixInShader + "linear", linear);
 			shaderLightingPass.setFloat(lightsNamePrefixInShader + "quadratic", quadratic);
+
+			// calculation speed up
+			// calculate radius of light volume/sphere
+			const float maxBrightness = std::fmaxf(std::fmaxf(lightColor.r, lightColor.g), lightColor.b);
+			float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
+			shaderLightingPass.setFloat(lightsNamePrefixInShader + "radius", radius);
 		}
 		shaderLightingPass.setVec3("viewPos", camera.pos);
 		renderQuad();
