@@ -48,9 +48,6 @@
     <ClCompile Include="src\renderer\Model.cpp">
       <Filter>src\renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\advancedLighting\main_01_Blinn-Phong.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer\CubeMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
     </ClCompile>
@@ -59,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="src\renderer\PlaneMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\advancedLighting\main_08_DeferredShading.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
