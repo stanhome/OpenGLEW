@@ -24,7 +24,7 @@ public:
 	};
 
 public:
-	PlaneMesh();
+	PlaneMesh(Type t = Type::pos);
 	PlaneMesh(std::shared_ptr<Texture> texture);
 	PlaneMesh(std::vector<std::shared_ptr<Texture>> textures);
 	~PlaneMesh();

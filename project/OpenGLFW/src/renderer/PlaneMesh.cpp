@@ -8,9 +8,9 @@
 
 using namespace std;
 
-PlaneMesh::PlaneMesh()
+PlaneMesh::PlaneMesh(Type t /*= Type::pos*/)
 {
-	setupMesh(Type::pos);
+	setupMesh(t);
 }
 
 PlaneMesh::PlaneMesh(std::shared_ptr<Texture> texture)
@@ -44,7 +44,7 @@ void PlaneMesh::draw(Shader shader)
 
 	//draw mesh
 	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 
 	// always good practice to set everything back to defaults once configured.

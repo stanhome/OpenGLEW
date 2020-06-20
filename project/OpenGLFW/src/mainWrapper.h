@@ -31,6 +31,40 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
+///////////////////////////////////////////////////
+// renders a 1x1 XY quad in NDC
+unsigned int s_quadVAO = 0;
+unsigned int s_quadVBO = 0;
+void renderScreenQuad() {
+	if (s_quadVAO == 0)
+	{
+		float quadVertices[] = {
+			// positions        // texture Coords
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+
+		// setup plane VAO
+		glGenVertexArrays(1, &s_quadVAO);
+		glBindVertexArray(s_quadVAO);
+		glGenBuffers(1, &s_quadVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, s_quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		unsigned int stride = 5 * sizeof(float);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void *)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+		glBindVertexArray(0);
+	}
+
+	glBindVertexArray(s_quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 void configOpenglGlobalState() {
 	glEnable(GL_DEPTH_TEST);
