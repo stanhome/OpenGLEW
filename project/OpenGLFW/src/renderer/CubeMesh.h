@@ -25,6 +25,7 @@ public:
 
 public:
 	CubeMesh();
+	CubeMesh(std::shared_ptr<Texture> texture);
 	CubeMesh(std::vector<std::shared_ptr<Texture>> textures);
 	~CubeMesh();
 

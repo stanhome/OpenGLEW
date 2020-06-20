@@ -13,6 +13,12 @@ CubeMesh::CubeMesh()
 	setupMesh(Type::pos);
 }
 
+CubeMesh::CubeMesh(std::shared_ptr<Texture> texture)
+{
+	textures.push_back(texture);
+	setupMesh(Type::posNormalUV);
+}
+
 CubeMesh::CubeMesh(std::vector<std::shared_ptr<Texture>> textures)
 	: textures(textures)
 {
