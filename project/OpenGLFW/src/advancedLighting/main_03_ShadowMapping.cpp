@@ -97,8 +97,9 @@ int main()
 		// 1. render depth of scene to texture (from light's perspecitve)
 		glm::mat4 matrixLightP, matrixLightV;
 		glm::mat4 matrixLightSpaceVP;
-		float nearPlane = 1.0f, farPlane = 7.5f;
-		matrixLightP = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
+		float nearPlane = 1.0f, farPlane = 10.0f;
+		const float lightHalfWidth = 10.0f;
+		matrixLightP = glm::ortho(-lightHalfWidth, lightHalfWidth, -lightHalfWidth, lightHalfWidth, nearPlane, farPlane);
 		matrixLightV = glm::lookAt(lightPos, V::zero, V::up);
 		matrixLightSpaceVP = matrixLightP * matrixLightV;
 		// render scene from light's point of view
@@ -109,6 +110,7 @@ int main()
 			// render scene
 			// floor
 			glm::mat4 matrixM = glm::mat4(1.0f);
+			matrixM = glm::translate(matrixM, glm::vec3(0, 0.3, 1));
 			matrixM = glm::scale(matrixM, glm::vec3(25, 1, 25));
 			shader.setMat4("M", matrixM);
 			plane.draw(shader);
@@ -116,12 +118,12 @@ int main()
 			// cubes
 			matrixM = glm::mat4(1.0f);
 			matrixM = glm::translate(matrixM, glm::vec3(0.0f, 1.5f, 0.0f));
-			matrixM = glm::scale(matrixM, glm::vec3(0.5f));
+			matrixM = glm::scale(matrixM, glm::vec3(1.0f));
 			shader.setMat4("M", matrixM);
 			cube.draw(shader);
 
 			matrixM = glm::mat4(1.0f);
-			matrixM = glm::translate(matrixM, glm::vec3(2.0f, 0.0f, 1.0f));
+			matrixM = glm::translate(matrixM, glm::vec3(1.5f, 0.0f, 1.0f));
 			matrixM = glm::scale(matrixM, glm::vec3(0.5f));
 			shader.setMat4("M", matrixM);
 			cube.draw(shader);

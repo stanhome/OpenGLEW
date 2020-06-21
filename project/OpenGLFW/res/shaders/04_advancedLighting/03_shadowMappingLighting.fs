@@ -16,7 +16,7 @@ uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform bool isBlinn;
 
-float shadowCalculation(vec4 fragPosLightSpace) {
+float shadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir) {
 	// perform perspective divide
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	// transform to [0, 1] Range from [-1, 1]
@@ -26,7 +26,8 @@ float shadowCalculation(vec4 fragPosLightSpace) {
 	// get depth of current fragment from light's perspective;
 	float currentDepth = projCoords.z;
 	// check whether current frag pos is in shadow
-	float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+	float bias = max(0.05 * (1 - dot(normal, lightDir)), 0.005);
+	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
 	return shadow;
 }
@@ -74,7 +75,7 @@ void main()
 	
 	/////////////
 	// 5. handle shadow
-	float shadowVal = 1.0 - shadowCalculation(fs_in.fragPosLightSpace);
+	float shadowVal = 1 - shadowCalculation(fs_in.fragPosLightSpace, n, lightDir);
 
     fragColor = vec4(objColor * (ambient + shadowVal * diffuse) + shadowVal * specular, 1.0f);
 }
