@@ -91,7 +91,7 @@ int main()
 		};
 
 		// move light position over time
-
+		lightPos.z = sin(glfwGetTime() * 0.5) * 3.0;
 
 		// Render
 		// ------------------------------
@@ -167,7 +167,7 @@ int main()
 			glClear(GL_DEPTH_BUFFER_BIT);
 			simpleDepthShader.use();
 			for (unsigned int i = 0; i < 6; ++i)
-				simpleDepthShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", matrixShadowVPs[i]);
+				simpleDepthShader.setMat4("shadowVP[" + std::to_string(i) + "]", matrixShadowVPs[i]);
 
 			simpleDepthShader.setFloat("far_plane", far_plane);
 			simpleDepthShader.setVec3("lightPos", lightPos);
@@ -192,6 +192,7 @@ int main()
 			objShader.setVec3("lightPos", lightPos);
 			objShader.setVec3("lightColor", glm::vec3(1.0, 1.0, 1.0));
 			objShader.setFloat("isBlinn", s_isBlinn);
+			objShader.setFloat("far_plane", far_plane);
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
 			renderScene(objShader);

@@ -30,6 +30,9 @@ float shadowCalculation(vec3 fragPos) {
 	float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
 	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
+	// debug
+	// fragColor = vec4(vec3(closestDepth / far_plane), 1.0);  
+
 	return shadow;
 }
 
