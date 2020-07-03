@@ -20,15 +20,28 @@ uniform float far_plane;
 float shadowCalculation(vec3 fragPos) {
 	// get vector between fragment position and light position
 	vec3 fragToLight = fragPos - lightPos;
-	// the fragment to light vector to sample from the depth map
-	float closestDepth = texture(depthMap, fragToLight).r;
-	// it is currently in linear ragne between [0, 1], transform it back to original depth value
-	closestDepth *= far_plane;
-	// now get current linear depth as the length between the fragment and light position
-	float currentDepth = length(fragToLight);
 
+	float shadow = 0;
 	float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
-	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+	float samples = 4.0;
+	float offset = 0.1;
+	float stepVal = offset / (samples * 0.5);
+	
+	for(float x = -offset; x < offset; x += stepVal)
+		for(float y = -offset; y < offset; y += stepVal)
+			for(float z = -offset; z < offset; z += stepVal) {
+				// the fragment to light vector to sample from the depth map
+				float closestDepth = texture(depthMap, fragToLight + vec3(x, y, z)).r;
+				// it is currently in linear ragne between [0, 1], transform it back to original depth value
+				closestDepth *= far_plane;
+				// now get current linear depth as the length between the fragment and light position
+				float currentDepth = length(fragToLight);
+
+				// currentDepth - bias > closestDepth ? 1.0 : 0.0;
+				shadow += step(closestDepth, currentDepth - bias);
+			}
+
+	shadow /= (samples * samples * samples);
 
 	// debug
 	// fragColor = vec4(vec3(closestDepth / far_plane), 1.0);  
