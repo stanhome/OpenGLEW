@@ -76,8 +76,7 @@ void main()
 	
 	/////////////
 	// 5. handle shadow
-	// float shadowVal = 1 - shadowCalculation(fs_in.fragPos);
-	float shadowVal = 0.0f;
+	float shadowVal = 1 - shadowCalculation(fs_in.fragPos);
 
     fragColor = vec4(objColor * (ambient + shadowVal * diffuse) + shadowVal * specular, 1.0f);
 }
