@@ -17,31 +17,37 @@ uniform bool isBlinn;
 
 uniform float far_plane;
 
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[] (
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
 float shadowCalculation(vec3 fragPos) {
 	// get vector between fragment position and light position
 	vec3 fragToLight = fragPos - lightPos;
+	// now get current linear depth as the length between the fragment and light position
+	float currentDepth = length(fragToLight);
 
 	float shadow = 0;
-	float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
-	float samples = 4.0;
-	float offset = 0.1;
-	float stepVal = offset / (samples * 0.5);
+	float bias = 0.15; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+	float samples = 20;
+	float viewDistance = length(viewPos - fragPos);
+	float diskRadius = (1.0 + (viewDistance / far_plane)) / far_plane;
 	
-	for(float x = -offset; x < offset; x += stepVal)
-		for(float y = -offset; y < offset; y += stepVal)
-			for(float z = -offset; z < offset; z += stepVal) {
-				// the fragment to light vector to sample from the depth map
-				float closestDepth = texture(depthMap, fragToLight + vec3(x, y, z)).r;
-				// it is currently in linear ragne between [0, 1], transform it back to original depth value
-				closestDepth *= far_plane;
-				// now get current linear depth as the length between the fragment and light position
-				float currentDepth = length(fragToLight);
+	for(int i = 0; i < samples; ++i) {
+		// the fragment to light vector to sample from the depth map
+		float closestDepth = texture(depthMap, fragToLight + gridSamplingDisk[i] * diskRadius).r;
+		// it is currently in linear ragne between [0, 1], transform it back to original depth value
+		closestDepth *= far_plane;
 
-				// currentDepth - bias > closestDepth ? 1.0 : 0.0;
-				shadow += step(closestDepth, currentDepth - bias);
-			}
-
-	shadow /= (samples * samples * samples);
+		// currentDepth - bias > closestDepth ? 1.0 : 0.0;
+		shadow += step(closestDepth, currentDepth - bias);
+	}
+	shadow /= float(samples);
 
 	// debug
 	// fragColor = vec4(vec3(closestDepth / far_plane), 1.0);  
