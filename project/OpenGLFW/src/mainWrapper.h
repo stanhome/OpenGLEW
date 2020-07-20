@@ -14,10 +14,10 @@
 #include "renderer/Model.h"
 
 // settings
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const int WIDTH = 1280;
+const int HEIGHT = 720;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 double s_lastX, s_lastY;
 
 // timing

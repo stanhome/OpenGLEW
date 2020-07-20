@@ -57,7 +57,7 @@
     <ClCompile Include="src\renderer\PlaneMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\advancedLighting\main_03_02_PointShadows.cpp">
+    <ClCompile Include="src\PBR\main_01_PBR_Lighting.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
