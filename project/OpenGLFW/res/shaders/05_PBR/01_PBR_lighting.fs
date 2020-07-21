@@ -138,5 +138,5 @@ void main()
 	// gamma correct
 	color = pow(color, vec3(1.0 / 2.2));
 
-    fragColor = vec4(color, 1.0f);
+    fragColor = vec4(n, 1.0f);
 }
