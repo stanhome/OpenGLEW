@@ -110,7 +110,7 @@ void main()
 
 	// reflectance equation
 	vec3 Lo = vec3(0.0);
-	for (int i = 0; i < 1; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		// calculate per-light radiance
 		vec3 l = lightPosArr[i] - fs_in.worldPos;
 		float lightDistance = length(l);
@@ -125,20 +125,18 @@ void main()
 		float NdotL = max(dot(n, l), 0.0);
 
 		// add to outgoing radiance Lo
-		// Lo +=  BRDFVal * radiance * NdotL;
-		Lo +=  n;
+		Lo +=  BRDFVal * radiance * NdotL;
 	}
 
 	// ambient lighting(IBL will replace this ambient lighting with environment lighting).
 	vec3 ambient = vec3(0.03) * albedo * ao;
 
-	// vec3 color = ambient + Lo;
-	vec3 color = fs_in.normal;
+	vec3 color = ambient + Lo;
 
 	// HDR tone mapping
-	// color = color / (color + vec3(1.0));
+	color = color / (color + vec3(1.0));
 	// gamma correct
-	// color = pow(color, vec3(1.0 / 2.2));
+	color = pow(color, vec3(1.0 / 2.2));
 
     fragColor = vec4(color, 1.0f);
 }

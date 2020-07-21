@@ -71,16 +71,16 @@ int main()
 		// ------------------------------
 		processInput(window);
 		s_processInputFunc = [](GLFWwindow * w) -> void {
-			if (glfwGetKey(w, GLFW_KEY_B) == GLFW_PRESS)
-			{
-				s_isBlinnKeyPressed = true;
-			}
+			//if (glfwGetKey(w, GLFW_KEY_B) == GLFW_PRESS)
+			//{
+			//	s_isBlinnKeyPressed = true;
+			//}
 
-			if (s_isBlinnKeyPressed && glfwGetKey(w, GLFW_KEY_B) == GLFW_RELEASE) {
-				s_isBlinnKeyPressed = false;
-				s_isBlinn = !s_isBlinn;
-				cout << (s_isBlinn ? "Blinn-Phong" : "Phong") << endl;
-			}
+			//if (s_isBlinnKeyPressed && glfwGetKey(w, GLFW_KEY_B) == GLFW_RELEASE) {
+			//	s_isBlinnKeyPressed = false;
+			//	s_isBlinn = !s_isBlinn;
+			//	cout << (s_isBlinn ? "Blinn-Phong" : "Phong") << endl;
+			//}
 		};
 
 		// Render
@@ -114,19 +114,17 @@ int main()
 		pbrShader.use();
 		glm::mat4 matVP = matProjection * camera.getViewMatrix();
 		pbrShader.setMat4("VP", matVP);
-		//pbrShader.setVec3("viewPos", camera.pos);
+		pbrShader.setVec3("viewPos", camera.pos);
 
 		// render row * column number of spheres with varying metallic/roughness values scaled by rows and columns respectively.
 		glm::mat4 M = glm::mat4(1.0f);
 		for (int row = 0; row < sphereRow; ++row)
 		{
-			//pbrShader.setFloat("metallic", (float)row / (float)sphereRow);
-			pbrShader.setFloat("metallic", 1.0);
+			pbrShader.setFloat("metallic", (float)row / (float)sphereRow);
 			for (int col = 0; col < sphereColumn; ++col)
 			{
 				//we clamp the roughness to 0.025 - 1.0 as perfectly smooth surface(roughness of 0.0) tend to look a bit off on direct lighting.
-				//pbrShader.setFloat("roughness", glm::clamp((float)col / (float)sphereColumn, 0.05f, 1.0f));
-				pbrShader.setFloat("roughness", 0.05f);
+				pbrShader.setFloat("roughness", glm::clamp((float)col / (float)sphereColumn, 0.05f, 1.0f));
 
 				M = glm::mat4(1.0f);
 				M = glm::translate(M, glm::vec3(
@@ -137,12 +135,9 @@ int main()
 
 				pbrShader.setMat4("M", M);
 				// render sphere
-				if (col % 3 == 0)
+				if (col % 2 == 0)
 				{
 					sphere.draw(pbrShader);
-				}
-				else if (col % 3 == 1) {
-					//backpack.draw(pbrShader);
 				}
 				else
 				{

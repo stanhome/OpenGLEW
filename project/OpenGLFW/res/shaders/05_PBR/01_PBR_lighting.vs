@@ -17,8 +17,7 @@ void main()
     vs_out.worldPos = vec3(M * vec4(aPos, 1.0));
 
     mat3 normalMatrixM = transpose(inverse(mat3(M)));
-    // vs_out.normal = normalMatrixM * aNormal;
-    vs_out.normal = aNormal;
+    vs_out.normal = normalMatrixM * aNormal;
     vs_out.texCoords = aTexCoords;
 
     gl_Position = VP * vec4(vs_out.worldPos, 1.0);
