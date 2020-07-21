@@ -4,6 +4,7 @@
 #include "mainWrapper.h"
 #include "renderer/CubeMesh.h"
 #include "renderer/PlaneMesh.h"
+#include "renderer/SphereMesh.h"
 
 #include <stb_image.h>
 
@@ -21,7 +22,16 @@ int main()
 
 	glEnable(GL_CULL_FACE);
 
+	SphereMesh sphere;
+
+	Texture woodTex(GL_TEXTURE_2D, "res/imgs/wood.png");
+	woodTex.setSamplerName("tex_diffuse", 0);
+	auto pWoodTex = std::make_shared<Texture>(woodTex);
+	CubeMesh cube(pWoodTex);
+	//Model backpack("res/objects/backpack/backpack.obj");
+
 	Shader pbrShader(SHADER_PATH("01_PBR_lighting.vs"), SHADER_PATH("01_PBR_lighting.fs"));
+	Shader lampShader("res/shaders/02_lighting/01_lamp.vs", "res/shaders/02_lighting/01_lamp.fs");
 
 	pbrShader.use();
 	pbrShader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
@@ -41,6 +51,7 @@ int main()
 		glm::vec3(300.0f, 300.0f, 300.0f),
 		glm::vec3(300.0f, 300.0f, 300.0f)
 	};
+	int lightCount = sizeof(lightPosArr) / sizeof(lightPosArr[0]);
 
 	int sphereRow = 7, sphereColumn = 7;
 	float spacing = 2.5f;
@@ -78,20 +89,44 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+		// pass the light properties
+		for (unsigned int i = 0; i < lightCount; ++i)
+		{
+			glm::vec3 lightPos = lightPosArr[i];
+			std::string idxStr = std::to_string(i);
+			pbrShader.use();
+			pbrShader.setVec3("lightPosArr[" + idxStr + "]", lightPos);
+			pbrShader.setVec3("lightColorArr[" + idxStr + "]", lightColorArr[i]);
+
+			// debug light
+			lampShader.use();
+			glm::mat4 matM = glm::mat4(1.0f);
+			matM = glm::translate(matM, lightPos);
+			matM = glm::scale(matM, glm::vec3(0.5f));
+
+			glm::mat4 matMVP = matProjection * camera.getViewMatrix() * matM;
+			lampShader.setMat4("MVP", matMVP);
+			lampShader.setVec3("color", lightColorArr[i]);
+			sphere.draw(lampShader);
+		}
+
 		pbrShader.use();
 		glm::mat4 matVP = matProjection * camera.getViewMatrix();
 		pbrShader.setMat4("VP", matVP);
-		pbrShader.setVec3("camPos", camera.pos);
+		//pbrShader.setVec3("viewPos", camera.pos);
 
 		// render row * column number of spheres with varying metallic/roughness values scaled by rows and columns respectively.
 		glm::mat4 M = glm::mat4(1.0f);
 		for (int row = 0; row < sphereRow; ++row)
 		{
-			pbrShader.setFloat("metallic", (float)row / (float)sphereRow);
+			//pbrShader.setFloat("metallic", (float)row / (float)sphereRow);
+			pbrShader.setFloat("metallic", 1.0);
 			for (int col = 0; col < sphereColumn; ++col)
 			{
 				//we clamp the roughness to 0.025 - 1.0 as perfectly smooth surface(roughness of 0.0) tend to look a bit off on direct lighting.
-				pbrShader.setFloat("roughness", glm::clamp((float)col / (float)sphereColumn, 0.05f, 1.0f));
+				//pbrShader.setFloat("roughness", glm::clamp((float)col / (float)sphereColumn, 0.05f, 1.0f));
+				pbrShader.setFloat("roughness", 0.05f);
 
 				M = glm::mat4(1.0f);
 				M = glm::translate(M, glm::vec3(
@@ -100,8 +135,20 @@ int main()
 					0.0f
 				));
 
-				pbrShader.setMat4("model", M);
+				pbrShader.setMat4("M", M);
 				// render sphere
+				if (col % 3 == 0)
+				{
+					sphere.draw(pbrShader);
+				}
+				else if (col % 3 == 1) {
+					//backpack.draw(pbrShader);
+				}
+				else
+				{
+					cube.draw(pbrShader);
+				}
+
 			}
 		}
 

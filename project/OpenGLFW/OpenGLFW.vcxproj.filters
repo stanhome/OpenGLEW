@@ -60,6 +60,9 @@
     <ClCompile Include="src\PBR\main_01_PBR_Lighting.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\SphereMesh.cpp">
+      <Filter>src\renderer\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\include\glad\glad.h">
@@ -99,6 +102,9 @@
       <Filter>src\renderer\mesh</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\PlaneMesh.h">
+      <Filter>src\renderer\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\SphereMesh.h">
       <Filter>src\renderer\mesh</Filter>
     </ClInclude>
   </ItemGroup>
