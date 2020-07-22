@@ -26,7 +26,8 @@ const float PI = 3.14159265359;
 // normal distribution
 float distributionGGX(vec3 n, vec3 h, float roughness)
 {
-	float a = roughness * roughness;
+	// float a = roughness * roughness;
+	float a = roughness;
 	float a2 = a * a;
 	float NdotH = max(dot(n, h), 0.0);
 	float NdotH2 = NdotH * NdotH;
