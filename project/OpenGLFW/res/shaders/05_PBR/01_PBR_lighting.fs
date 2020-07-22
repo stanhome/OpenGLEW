@@ -72,7 +72,7 @@ vec3 BRDF(vec3 n, vec3 v, vec3 l, float roughness, float metallic, vec3 F0, vec3
 	
 	float NDF = distributionGGX(n, h, roughness);
 	float G = geometrySmith(n, v, l, roughness);
-	vec3 F = fresnelSchlick(clamp(dot(h, v), 0.0, 1.0), F0);
+	vec3 F = fresnelSchlick(clamp(dot(n, v), 0.0, 1.0), F0);
 
 	// diffuse term
 	vec3 diffuse = albedoColor / PI;
