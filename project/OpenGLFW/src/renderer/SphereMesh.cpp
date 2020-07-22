@@ -54,12 +54,6 @@ void SphereMesh::draw(Shader shader)
 
 void SphereMesh::setupMesh()
 {
-	glGenVertexArrays(1, &vao);
-
-	unsigned int vbo, ebo;
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
-
 	std::vector<glm::vec3> positions;
 	std::vector<glm::vec2> uv;
 	std::vector<glm::vec3> normals;
@@ -69,29 +63,29 @@ void SphereMesh::setupMesh()
 	const unsigned int Y_SEGMENTS = 64;
 	const float PI = 3.14159265359;
 	for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
-	{
 		for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
 		{
 			float xSegment = (float)x / (float)X_SEGMENTS;
 			float ySegment = (float)y / (float)Y_SEGMENTS;
-			float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-			float yPos = std::cos(ySegment * PI);
-			float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+			float theta = ySegment * PI;
+			float phi = xSegment * 2.0f * PI;
+			float xPos = std::sin(theta) * std::cos(phi);
+			float yPos = std::cos(theta);
+			float zPos = std::sin(theta) * std::sin(phi);
 
 			positions.push_back(glm::vec3(xPos, yPos, zPos));
 			uv.push_back(glm::vec2(xSegment, ySegment));
 			normals.push_back(glm::vec3(xPos, yPos, zPos));
 		}
-	}
 
-	bool oddRow = false;
+	bool isEvenRow = true;
 	for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
 	{
-		if (!oddRow) // even rows: y == 0, y == 2; and so on
+		if (isEvenRow) // y ==0, y == 2, and so on.
 		{
 			for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
 			{
-				indices.push_back(y       * (X_SEGMENTS + 1) + x);
+				indices.push_back(y * (X_SEGMENTS + 1) + x);
 				indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
 			}
 		}
@@ -100,44 +94,61 @@ void SphereMesh::setupMesh()
 			for (int x = X_SEGMENTS; x >= 0; --x)
 			{
 				indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
-				indices.push_back(y       * (X_SEGMENTS + 1) + x);
+				indices.push_back(y * (X_SEGMENTS + 1) + x);
 			}
 		}
-		oddRow = !oddRow;
+
+		isEvenRow = !isEvenRow;
 	}
 	_indexCount = indices.size();
 
 	std::vector<float> data;
 	for (unsigned int i = 0; i < positions.size(); ++i)
 	{
-		data.push_back(positions[i].x);
-		data.push_back(positions[i].y);
-		data.push_back(positions[i].z);
-		if (normals.size() > 0)
-		{
-			data.push_back(normals[i].x);
-			data.push_back(normals[i].y);
-			data.push_back(normals[i].z);
-		}
-		if (uv.size() > 0)
-		{
-			data.push_back(uv[i].x);
-			data.push_back(uv[i].y);
-		}
+		const glm::vec3 &pos = positions[i];
+		data.push_back(pos.x);
+		data.push_back(pos.y);
+		data.push_back(pos.z);
+
+		// normal
+		const glm::vec3 &n = normals[i];
+		data.push_back(n.x);
+		data.push_back(n.y);
+		data.push_back(n.z);
+
+		//uv
+		const glm::vec2 &uvRef = uv[i];
+		data.push_back(uvRef.x);
+		data.push_back(uvRef.y);
 	}
+
+	// create buffers/arrays
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &_vbo);
+	glGenBuffers(1, &_ebo);
+
 	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// load data into vertex buffers
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-	float stride = (3 + 2 + 3) * sizeof(float);
+
+	float stride = (3 + 3 + 2) * sizeof(float);
+
+	// vertex positions
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 
+	// vertex normals
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(GLfloat)));
+
+	// vertex uv
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(GLfloat)));
+
+	glBindVertexArray(0);
 }
 
 

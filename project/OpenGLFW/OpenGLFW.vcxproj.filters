@@ -63,9 +63,6 @@
     <ClCompile Include="src\renderer\SphereMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\PBR\lighting_lighting.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\include\glad\glad.h">
