@@ -57,10 +57,13 @@
     <ClCompile Include="src\renderer\PlaneMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
     </ClCompile>
+    <ClCompile Include="src\PBR\main_01_PBR_Lighting.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\renderer\SphereMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\PBR\main_01_PBR_Lighting.cpp">
+    <ClCompile Include="src\PBR\lighting_lighting.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

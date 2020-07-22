@@ -27,7 +27,7 @@ const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 20.0f));
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 bool firstMouse = true;
@@ -81,7 +81,7 @@ int main()
 
 	// build and compile shaders
 	// -------------------------
-	Shader shader("res/shaders/1.1.pbr.vs", "res/shaders/1.1.pbr.fs");
+	Shader shader("res/shaders/05_PBR/1.1.pbr.vs", "res/shaders/05_PBR/1.1.pbr.fs");
 
 	shader.use();
 	shader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
@@ -109,7 +109,6 @@ int main()
 	// --------------------------------------------------
 	glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 	shader.use();
-	shader.setMat4("projection", projection);
 
 	// render loop
 	// -----------
@@ -131,9 +130,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.use();
-		glm::mat4 view = camera.getViewMatrix();
-		shader.setMat4("view", view);
-		shader.setVec3("camPos", camera.pos);
+		glm::mat4 VP = projection * camera.getViewMatrix();
+		shader.setMat4("VP", VP);
+		shader.setVec3("viewPos", camera.pos);
 
 		// render rows*column number of spheres with varying metallic/roughness values scaled by rows and columns respectively
 		glm::mat4 model = glm::mat4(1.0f);
@@ -152,7 +151,7 @@ int main()
 					(row - (nrRows / 2)) * spacing,
 					0.0f
 				));
-				shader.setMat4("model", model);
+				shader.setMat4("M", model);
 				renderSphere();
 			}
 		}
@@ -164,13 +163,13 @@ int main()
 		{
 			glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
 			newPos = lightPositions[i];
-			shader.setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
-			shader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+			shader.setVec3("lightPosArr[" + std::to_string(i) + "]", newPos);
+			shader.setVec3("lightColorArr[" + std::to_string(i) + "]", lightColors[i]);
 
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, newPos);
 			model = glm::scale(model, glm::vec3(0.5f));
-			shader.setMat4("model", model);
+			shader.setMat4("M", model);
 			renderSphere();
 		}
 
@@ -225,7 +224,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 
 	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float yoffset = ypos - lastY;
 
 	lastX = xpos;
 	lastY = ypos;
@@ -307,17 +306,18 @@ void renderSphere()
 			data.push_back(positions[i].x);
 			data.push_back(positions[i].y);
 			data.push_back(positions[i].z);
-			if (uv.size() > 0)
-			{
-				data.push_back(uv[i].x);
-				data.push_back(uv[i].y);
-			}
 			if (normals.size() > 0)
 			{
 				data.push_back(normals[i].x);
 				data.push_back(normals[i].y);
 				data.push_back(normals[i].z);
 			}
+			if (uv.size() > 0)
+			{
+				data.push_back(uv[i].x);
+				data.push_back(uv[i].y);
+			}
+
 		}
 		glBindVertexArray(sphereVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -328,9 +328,10 @@ void renderSphere()
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*)(5 * sizeof(float)));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+
 	}
 
 	glBindVertexArray(sphereVAO);

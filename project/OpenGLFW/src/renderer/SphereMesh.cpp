@@ -113,16 +113,16 @@ void SphereMesh::setupMesh()
 		data.push_back(positions[i].x);
 		data.push_back(positions[i].y);
 		data.push_back(positions[i].z);
-		if (uv.size() > 0)
-		{
-			data.push_back(uv[i].x);
-			data.push_back(uv[i].y);
-		}
 		if (normals.size() > 0)
 		{
 			data.push_back(normals[i].x);
 			data.push_back(normals[i].y);
 			data.push_back(normals[i].z);
+		}
+		if (uv.size() > 0)
+		{
+			data.push_back(uv[i].x);
+			data.push_back(uv[i].y);
 		}
 	}
 	glBindVertexArray(vao);
@@ -134,9 +134,10 @@ void SphereMesh::setupMesh()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*)(5 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+
 }
 
 
