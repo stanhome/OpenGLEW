@@ -11,10 +11,10 @@ uniform float roughness;
 uniform float ao;
 
 // lights
-uniform vec3 lightPosArr[4];
-uniform vec3 lightColorArr[4];
+uniform vec3 lightPositions[4];
+uniform vec3 lightColors[4];
 
-uniform vec3 viewPos;
+uniform vec3 camPos;
 
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 void main()
 {		
     vec3 N = normalize(Normal);
-    vec3 V = normalize(viewPos - WorldPos);
+    vec3 V = normalize(camPos - WorldPos);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
@@ -73,11 +73,11 @@ void main()
     for(int i = 0; i < 4; ++i) 
     {
         // calculate per-light radiance
-        vec3 L = normalize(lightPosArr[i] - WorldPos);
+        vec3 L = normalize(lightPositions[i] - WorldPos);
         vec3 H = normalize(V + L);
-        float distance = length(lightPosArr[i] - WorldPos);
+        float distance = length(lightPositions[i] - WorldPos);
         float attenuation = 1.0 / (distance * distance);
-        vec3 radiance = lightColorArr[i] * attenuation;
+        vec3 radiance = lightColors[i] * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(N, H, roughness);   
