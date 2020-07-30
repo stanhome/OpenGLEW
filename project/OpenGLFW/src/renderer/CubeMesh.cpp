@@ -31,15 +31,18 @@ CubeMesh::~CubeMesh()
 	glDeleteBuffers(1, &_vbo);
 }
 
-void CubeMesh::draw(Shader shader)
+void CubeMesh::draw(Shader shader, bool isUsingInternalTexture /*= true*/)
 {
-	for (unsigned int i = 0; i < textures.size(); ++i)
+	if (isUsingInternalTexture)
 	{
-		auto tex = textures[i];
+		for (unsigned int i = 0; i < textures.size(); ++i)
+		{
+			auto tex = textures[i];
 
-		// set the sampler to the correct texture unit
-		shader.setInt(tex->getSamplerName(), i);
-		tex->bind(GL_TEXTURE0 + i);
+			// set the sampler to the correct texture unit
+			shader.setInt(tex->getSamplerName(), i);
+			tex->bind(GL_TEXTURE0 + i);
+		}
 	}
 
 	//draw mesh

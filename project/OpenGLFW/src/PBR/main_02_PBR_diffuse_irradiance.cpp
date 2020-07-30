@@ -23,6 +23,9 @@ int main()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
+
 	// step 1 convert equi-rectangular map to Cubemap
 	// PBR:setup framebuffer
 	unsigned int captureFBO, captureRBO;
@@ -64,9 +67,9 @@ int main()
 
 	// PBR: convert HDR equirectangular environment map to cubemap equivalent
 	Shader rectangularToCubemapShader(SHADER_PATH("02_PBR_cubemap.vs"), SHADER_PATH("02_PBR_rectangularToCubemap.fs"));
-	rectangularToCubemapShader.use();
-	rectangularToCubemapShader.setInt("equirectangularMap0", 0);
-	hdrRectangularMap.bind(GL_TEXTURE0);
+
+	auto pHdrRectangularMap = std::make_shared<Texture>(hdrRectangularMap);
+	CubeMesh toCubemapMesh(pHdrRectangularMap);
 
 	glViewport(0, 0, 512, 512); // don't forget to configure the viewport to the caputre dimensions.
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
@@ -75,11 +78,12 @@ int main()
 	{
 		glm::mat4 &matCaptureV = matCaptureViews[i];
 		matCaptureVP = matCaptureP * matCaptureV;
+		rectangularToCubemapShader.use();
 		rectangularToCubemapShader.setMat4("VP", matCaptureVP);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
+		toCubemapMesh.draw(rectangularToCubemapShader);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
@@ -91,12 +95,16 @@ int main()
 
 	SphereMesh sphere;
 	Shader pbrShader(SHADER_PATH("01_PBR_lighting.vs"), SHADER_PATH("01_PBR_lighting.fs"));
-	//Shader pbrShader(SHADER_PATH("1.1.pbr.vs"), SHADER_PATH("1.1.pbr.fs"));
 	Shader lampShader("res/shaders/02_lighting/01_lamp.vs", "res/shaders/02_lighting/01_lamp.fs");
+	Shader skyboxShader(SHADER_PATH("02_PBR_skybox.vs"), SHADER_PATH("02_PBR_skybox.fs"));
 
 	pbrShader.use();
 	pbrShader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
 	pbrShader.setFloat("ao", 1.0f);
+
+	skyboxShader.use();
+	skyboxShader.setInt("environmentMap", 0);
+
 
 	// lights
 	glm::vec3 lightPosArr[] = {
@@ -117,7 +125,14 @@ int main()
 	int sphereRow = 7, sphereColumn = 7;
 	float spacing = 2.5f;
 	glm::mat4 matProjection = glm::perspective(glm::radians(camera.fov), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	skyboxShader.use();
+	skyboxShader.setMat4("P", matProjection);
 
+
+	// then before rendering, config the viewport to the original framebuffer's screen dimensions
+	int scrW, scrH;
+	glfwGetFramebufferSize(window, &scrW, &scrH);
+	glViewport(0, 0, scrW, scrH);
 
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
@@ -200,6 +215,19 @@ int main()
 			}
 		}
 
+		// render skybox
+		skyboxShader.use();
+		skyboxShader.setMat4("V", camera.getViewMatrix());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+		toCubemapMesh.draw(skyboxShader, false);
+
+		/*
+		// show the HDR rectangular to cubemap
+		rectangularToCubemapShader.use();
+		rectangularToCubemapShader.setMat4("VP", matVP);
+		toCubemapMesh.draw(rectangularToCubemapShader);
+		*/
 
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
 		// ------------------------------

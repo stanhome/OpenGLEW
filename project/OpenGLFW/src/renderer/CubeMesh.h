@@ -29,7 +29,7 @@ public:
 	CubeMesh(std::vector<std::shared_ptr<Texture>> textures);
 	~CubeMesh();
 
-	void draw(Shader shader);
+	void draw(Shader shader, bool isUsingInternalTexture = true);
 
 private:
 	unsigned int _vbo;
