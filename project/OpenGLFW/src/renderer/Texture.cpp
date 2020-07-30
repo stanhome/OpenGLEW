@@ -42,24 +42,38 @@ void Texture::load(const std::string &filePath)
 	int width, height, channel;
 
 	unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &channel, 0);
-	if (data)
+
+	do 
 	{
+		if (data == nullptr) {
+			cout << "[E] Failed to load texture" << endl;
+			break;
+		}
+
+		bool isHDR = filePath.find_last_of(".hdr") != std::string::npos;
+		if (isHDR)
+		{
+			// hdr format
+			glTexImage2D(_target, 0, GL_RGB16, width, height, 0, GL_RGB, GL_FLOAT, data);
+			break;
+		}
+
+		// common format
 		GLenum format;
 		switch (channel)
 		{
 		case 1: format = GL_RED; break;
 		case 3: format = GL_RGB; break;
 		case 4: format = GL_RGBA; break;
-		default : break;
+		default: break;
 		}
 
 		glTexImage2D(_target, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(_target);
-	}
-	else
-	{
-		cout << "[E] Failed to load texture" << endl;
-	}
+
+		break;
+	} while (true);
+
 	stbi_image_free(data);
 #if _LOG_ == 1
 	cout << "Texture::load end." << endl;
