@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
-    <ClCompile Include="src\PBR\main_01_PBR_Lighting-withTexture.cpp" />
+    <ClCompile Include="src\PBR\main_02_PBR_diffuse_irradiance.cpp" />
     <ClCompile Include="src\renderer\CubeMesh.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\renderer\Model.cpp" />
