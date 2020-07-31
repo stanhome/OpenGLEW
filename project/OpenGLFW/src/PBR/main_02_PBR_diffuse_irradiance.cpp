@@ -30,11 +30,13 @@ int main()
 	// PBR:setup framebuffer
 	unsigned int captureFBO, captureRBO;
 	glGenFramebuffers(1, &captureFBO);
-	glGenRenderbuffers(1, &captureRBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+
+	// not need
+	//glGenRenderbuffers(1, &captureRBO);
+	//glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	//glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
 	// PBR:load the HDR environment map
 	Texture hdrRectangularMap(GL_TEXTURE_2D, "res/imgs/hdr/Newport_Loft_Ref.hdr");
@@ -80,31 +82,66 @@ int main()
 		matCaptureVP = matCaptureP * matCaptureV;
 		rectangularToCubemapShader.use();
 		rectangularToCubemapShader.setMat4("VP", matCaptureVP);
+		// change captureFBO' attachment to Texture.
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		toCubemapMesh.draw(rectangularToCubemapShader);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
 
-	//auto phdrRectangularMap = std::make_shared<Texture>(hdrRectangularMap);
-	//CubeMesh cube(phdrRectangularMap);
+	// step 2 solve diffuse integral by convolution to creat an irradiance (cube)map.
+	unsigned int irradianceMap;
+	glGenTextures(1, &irradianceMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 32, 32, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	// not need
+	//glBindRenderbuffer(GL_FRAMEBUFFER, captureRBO);
+	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
 
+	Shader irradianceShader(SHADER_PATH("02_PBR_cubemap.vs"), SHADER_PATH("02_PBR_irradiance_convolution.fs"));
+	irradianceShader.use();
+	irradianceShader.setInt("environmentMap", 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 
+	glViewport(0, 0, 32, 32); // don't forget to configure the viewport to the capture dimensions.
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		matCaptureVP = matCaptureP * matCaptureViews[i];
+		irradianceShader.setMat4("VP", matCaptureVP);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		toCubemapMesh.draw(irradianceShader, false);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	/////////////////////////////////////////////////////////////////////////
+	// step 3 create GameObject in Scene.
+	// PBR: Sphere in Scene.
 	SphereMesh sphere;
-	Shader pbrShader(SHADER_PATH("01_PBR_lighting.vs"), SHADER_PATH("01_PBR_lighting.fs"));
+	Shader pbrShader(SHADER_PATH("02_PBR_lighting_with_irradiance.vs"), SHADER_PATH("02_PBR_lighting_with_irradiance.fs"));
 	Shader lampShader("res/shaders/02_lighting/01_lamp.vs", "res/shaders/02_lighting/01_lamp.fs");
 	Shader skyboxShader(SHADER_PATH("02_PBR_skybox.vs"), SHADER_PATH("02_PBR_skybox.fs"));
 
 	pbrShader.use();
-	pbrShader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
+	pbrShader.setVec3("albedo", 0.5f, 0.01f, 0.01f);
 	pbrShader.setFloat("ao", 1.0f);
 
 	skyboxShader.use();
 	skyboxShader.setInt("environmentMap", 0);
-
 
 	// lights
 	glm::vec3 lightPosArr[] = {
@@ -191,6 +228,11 @@ int main()
 		glm::mat4 matVP = matProjection * camera.getViewMatrix();
 		pbrShader.setMat4("VP", matVP);
 		pbrShader.setVec3("viewPos", camera.pos);
+		pbrShader.setInt("irradianceMap", 0);
+
+		// bind pre-computed IBL data
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
 
 		// render row * column number of spheres with varying metallic/roughness values scaled by rows and columns respectively.
 		glm::mat4 M = glm::mat4(1.0f);
@@ -220,14 +262,8 @@ int main()
 		skyboxShader.setMat4("V", camera.getViewMatrix());
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap); // display irradiance map
 		toCubemapMesh.draw(skyboxShader, false);
-
-		/*
-		// show the HDR rectangular to cubemap
-		rectangularToCubemapShader.use();
-		rectangularToCubemapShader.setMat4("VP", matVP);
-		toCubemapMesh.draw(rectangularToCubemapShader);
-		*/
 
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
 		// ------------------------------
