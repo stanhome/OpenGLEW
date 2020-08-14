@@ -101,6 +101,10 @@ int main()
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	// let OpenGL generate mipmaps from first mip face(combatting visible dots artifact, 对抗光斑伪影)
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
 	// step 2 solve diffuse integral by convolution to creat an irradiance (cube)map.
 	unsigned int irradianceMap;
 	glGenTextures(1, &irradianceMap);
@@ -348,8 +352,8 @@ int main()
 		toCubemapMesh.draw(skyboxShader, false);
 
 		// test: render BRDF map to screen
-		//brdfShader.use();
-		//renderScreenQuad();
+		brdfShader.use();
+		renderScreenQuad();
 
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
 		// ------------------------------
