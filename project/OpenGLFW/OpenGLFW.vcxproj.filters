@@ -60,7 +60,7 @@
     <ClCompile Include="src\renderer\SphereMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\PBR\main_02_PBR_diffuse_irradiance.cpp">
+    <ClCompile Include="src\PBR\main_02_PBR_specular_IBL.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
