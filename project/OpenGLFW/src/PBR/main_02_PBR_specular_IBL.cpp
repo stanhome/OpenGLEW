@@ -20,8 +20,8 @@ int main()
 	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
 	if (window == nullptr) return -1;
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_FRONT);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
@@ -29,7 +29,7 @@ int main()
 	// 解决 cubemap 两个面之间的接缝问题
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	Shader pbrShader(SHADER_PATH("02_PBR_lighting_with_irradiance.vs"), SHADER_PATH("02_PBR_lighting_with_irradiance.fs"));
+	Shader pbrShader(SHADER_PATH("03_PBR_direction_and_indirection_lighting.vs"), SHADER_PATH("03_PBR_direction_and_indirection_lighting.fs"));
 	Shader rectangularToCubemapShader(SHADER_PATH("02_PBR_cubemap.vs"), SHADER_PATH("02_PBR_rectangularToCubemap.fs"));
 	Shader lampShader("res/shaders/02_lighting/01_lamp.vs", "res/shaders/02_lighting/01_lamp.fs");
 	Shader skyboxShader(SHADER_PATH("02_PBR_skybox.vs"), SHADER_PATH("02_PBR_skybox.fs"));
@@ -224,6 +224,9 @@ int main()
 	pbrShader.use();
 	pbrShader.setVec3("albedo", 0.5f, 0.01f, 0.01f);
 	pbrShader.setFloat("ao", 1.0f);
+	pbrShader.setInt("irradianceMap", 0);
+	pbrShader.setInt("prefilterMap", 1);
+	pbrShader.setInt("brdfLUT", 2);
 
 	skyboxShader.use();
 	skyboxShader.setInt("environmentMap", 0);
@@ -313,11 +316,14 @@ int main()
 		glm::mat4 matVP = matProjection * camera.getViewMatrix();
 		pbrShader.setMat4("VP", matVP);
 		pbrShader.setVec3("viewPos", camera.pos);
-		pbrShader.setInt("irradianceMap", 0);
 
 		// bind pre-computed IBL data
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
 		// render row * column number of spheres with varying metallic/roughness values scaled by rows and columns respectively.
 		glm::mat4 M = glm::mat4(1.0f);
@@ -352,8 +358,8 @@ int main()
 		toCubemapMesh.draw(skyboxShader, false);
 
 		// test: render BRDF map to screen
-		brdfShader.use();
-		renderScreenQuad();
+		//brdfShader.use();
+		//renderScreenQuad();
 
 		// swap buffers and poll IO events(keys pressed/released, mouse moved etc.)
 		// ------------------------------
