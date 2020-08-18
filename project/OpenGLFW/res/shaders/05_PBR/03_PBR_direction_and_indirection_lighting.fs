@@ -29,8 +29,7 @@ const float PI = 3.14159265359;
 // normal distribution
 float distributionGGX(vec3 n, vec3 h, float roughness)
 {
-	// float a = roughness * roughness;
-	float a = roughness;
+	float a = roughness * roughness;
 	float a2 = a * a;
 	float NdotH = max(dot(n, h), 0.0);
 	float NdotH2 = NdotH * NdotH;
@@ -39,7 +38,7 @@ float distributionGGX(vec3 n, vec3 h, float roughness)
 	float denominator = (NdotH2 * (a2 - 1.0) + 1.0);
 	denominator = PI * denominator * denominator;
 
-	return numerator / max(denominator, 0.001);
+	return numerator / denominator;
 }
 
 // geometry function
@@ -144,6 +143,7 @@ void main()
 	vec3 kS = F;
 	vec3 kD = 1.0 - kS;
 	kD *= (1.0 - metallic);
+
 	vec3 irradiance = texture(irradianceMap, n).rgb;
 	vec3 diffuse = irradiance * albedo;
 
@@ -153,7 +153,7 @@ void main()
 	vec2 brdf = texture(brdfLUT, vec2(max(dot(n, v), 0.0), roughness)).rg;
 	vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-	vec3 ambient = kD * (diffuse * specular) * ao;
+	vec3 ambient =  (kD * diffuse + specular) * ao;
 	// vec3 ambient = vec3(0.03) * albedo * ao;
 
 	vec3 color = ambient + Lo;
