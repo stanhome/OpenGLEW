@@ -23,7 +23,7 @@ float distributionGGX(vec3 n, vec3 h, float roughness)
 	float denominator = (NdotH2 * (a2 - 1.0) + 1.0);
 	denominator = PI * denominator * denominator;
 
-	return numerator / max(denominator, 0.001);
+	return numerator / denominator;
 }
 
 //-----------------------------------------------
@@ -46,7 +46,7 @@ vec3 importanceSampleGGX(vec2 xi, vec3 n, float roughness) {
 	float a = roughness * roughness;
 	float a2 = a * a;
 	float phi = 2.0 * PI * xi.x;
-	float cosTheat = sqrt(1.0 - xi.y) / (1.0 + (a2 - 1.0) * xi.y);
+	float cosTheat = sqrt((1.0 - xi.y) / (1.0 + (a2 - 1.0) * xi.y));
 	float sinTheat = sqrt(1.0 - cosTheat * cosTheat);
 
 	// from spherical coordinates to cartesian coordinates - halfway vector
@@ -93,7 +93,7 @@ void main() {
 			float saTexel = 4.0 * PI / (6.0 * resolution * resolution);
 			float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
 
-			float mipLevel = roughness == 0.0 ? 0.0 : 5.0 * log2(saSample / saTexel);
+			float mipLevel = roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel);
 
 			prefilteredColor += textureLod(environmentMap, l, mipLevel).rgb * NdotL;
 			totalWeight += NdotL;
