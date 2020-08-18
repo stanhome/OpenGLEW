@@ -16,7 +16,6 @@ using namespace std;
 static bool s_isBlinn = false;
 static bool s_isBlinnKeyPressed = false;
 
-static bool s_isBreakLoop = false;
 void changeEnvFile();
 
 void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
@@ -171,7 +170,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	glfwGetFramebufferSize(window, &scrW, &scrH);
 	glViewport(0, 0, scrW, scrH);
 
-	s_isBreakLoop = false;
+	bool isBreakLoop = false;
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
 		// pre-frame time logic
@@ -185,30 +184,30 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 		// ------------------------------
 		processInput(window);
 		s_processInputFunc = [](GLFWwindow * w) -> void {
-			if (glfwGetKey(w, GLFW_KEY_B) == GLFW_PRESS)
-			{
-				s_isBlinnKeyPressed = true;
-			}
+			//if (glfwGetKey(w, GLFW_KEY_B) == GLFW_PRESS)
+			//{
+			//	s_isBlinnKeyPressed = true;
+			//}
 
-			if (s_isBlinnKeyPressed && glfwGetKey(w, GLFW_KEY_B) == GLFW_RELEASE) {
-				s_isBlinnKeyPressed = false;
-				s_isBlinn = !s_isBlinn;
-				cout << (s_isBlinn ? "Blinn-Phong" : "Phong") << endl;
-			}
+			//if (s_isBlinnKeyPressed && glfwGetKey(w, GLFW_KEY_B) == GLFW_RELEASE) {
+			//	s_isBlinnKeyPressed = false;
+			//	s_isBlinn = !s_isBlinn;
+			//	cout << (s_isBlinn ? "Blinn-Phong" : "Phong") << endl;
+			//}
 		};
 
-		s_onKeyClickEvent = [](int key) -> void {
+		s_onKeyClickEvent = [&isBreakLoop](int key) -> void {
 			switch (key)
 			{
 				case GLFW_KEY_C:
 				{
 					changeEnvFile();
-					s_isBreakLoop = true;
+					isBreakLoop = true;
 				}
 			}
 		};
 
-		if (s_isBreakLoop)
+		if (isBreakLoop)
 		{
 			break;
 		}

@@ -170,7 +170,7 @@ typedef void OnProcessInput(GLFWwindow *window);
 static OnProcessInput *s_processInputFunc = nullptr;
 
 typedef void OnKeyClickEvent(int key);
-static OnKeyClickEvent *s_onKeyClickEvent;
+static std::function<OnKeyClickEvent> s_onKeyClickEvent;
 static std::map<int, bool> s_keyPressedMap;
 
 bool s_isLPressed = false;
@@ -214,7 +214,7 @@ void processInput(GLFWwindow *window) {
 			if (keyIter != s_keyPressedMap.end() && keyIter->second == true && glfwGetKey(window, key) == GLFW_RELEASE)
 			{
 				keyIter->second = false;
-				(*s_onKeyClickEvent)(key);
+				(s_onKeyClickEvent)(key);
 			}
 		}
 	}
