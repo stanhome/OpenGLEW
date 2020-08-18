@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <functional>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -168,6 +169,10 @@ void scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 typedef void OnProcessInput(GLFWwindow *window);
 static OnProcessInput *s_processInputFunc = nullptr;
 
+typedef void OnKeyClickEvent(int key);
+static OnKeyClickEvent *s_onKeyClickEvent;
+static std::map<int, bool> s_keyPressedMap;
+
 bool s_isLPressed = false;
 
 void processInput(GLFWwindow *window) {
@@ -194,6 +199,44 @@ void processInput(GLFWwindow *window) {
 	{
 		(*s_processInputFunc)(window);
 	}
+
+	if (s_onKeyClickEvent)
+	{
+		// handle key click event
+		for (int key = GLFW_KEY_A; key <= GLFW_KEY_Z; key++)
+		{
+			if (glfwGetKey(window, key) == GLFW_PRESS) s_keyPressedMap[key] = true;
+		}
+
+		for (int key = GLFW_KEY_A; key <= GLFW_KEY_Z; key++)
+		{
+			auto keyIter = s_keyPressedMap.find(key);
+			if (keyIter != s_keyPressedMap.end() && keyIter->second == true && glfwGetKey(window, key) == GLFW_RELEASE)
+			{
+				keyIter->second = false;
+				(*s_onKeyClickEvent)(key);
+			}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// changed environment map file logic.
+static const char *s_envFileArr[] = {
+	"res/imgs/hdr/Newport_Loft_Ref.hdr",
+	"res/imgs/hdr/Factory_Catwalk_2k.hdr",
+	"res/imgs/hdr/Theatre-Side_2k.hdr",
+	"res/imgs/hdr/Mans_Outside_2k.hdr",
+};
+static int s_envFileIdx = 0;
+static const char *s_currentEnvFile = s_envFileArr[0];
+
+void changeEnvFile() {
+	int envFileCount = sizeof(s_envFileArr) / sizeof(*s_envFileArr);
+	s_envFileIdx++;
+	s_envFileIdx %= envFileCount;
+
+	s_currentEnvFile = s_envFileArr[s_envFileIdx];
 }
 
 

@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <sstream>
+#include <functional>
 
 #include "mainWrapper.h"
 #include "renderer/CubeMesh.h"
@@ -15,11 +16,10 @@ using namespace std;
 static bool s_isBlinn = false;
 static bool s_isBlinnKeyPressed = false;
 
-int main()
-{
-	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
-	if (window == nullptr) return -1;
+static bool s_isBreakLoop = false;
+void changeEnvFile();
 
+void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
@@ -39,7 +39,7 @@ int main()
 	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
 	// PBR:load the HDR environment map
-	Texture hdrRectangularMap(GL_TEXTURE_2D, "res/imgs/hdr/Newport_Loft_Ref.hdr");
+	Texture hdrRectangularMap(GL_TEXTURE_2D, environmentMapFilepath);
 	hdrRectangularMap.setSamplerName("equirectangularMap", 0);
 
 	// PBR:setup cubemap to render to and attach to framebuffer
@@ -171,6 +171,7 @@ int main()
 	glfwGetFramebufferSize(window, &scrW, &scrH);
 	glViewport(0, 0, scrW, scrH);
 
+	s_isBreakLoop = false;
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
 		// pre-frame time logic
@@ -184,17 +185,33 @@ int main()
 		// ------------------------------
 		processInput(window);
 		s_processInputFunc = [](GLFWwindow * w) -> void {
-			//if (glfwGetKey(w, GLFW_KEY_B) == GLFW_PRESS)
-			//{
-			//	s_isBlinnKeyPressed = true;
-			//}
+			if (glfwGetKey(w, GLFW_KEY_B) == GLFW_PRESS)
+			{
+				s_isBlinnKeyPressed = true;
+			}
 
-			//if (s_isBlinnKeyPressed && glfwGetKey(w, GLFW_KEY_B) == GLFW_RELEASE) {
-			//	s_isBlinnKeyPressed = false;
-			//	s_isBlinn = !s_isBlinn;
-			//	cout << (s_isBlinn ? "Blinn-Phong" : "Phong") << endl;
-			//}
+			if (s_isBlinnKeyPressed && glfwGetKey(w, GLFW_KEY_B) == GLFW_RELEASE) {
+				s_isBlinnKeyPressed = false;
+				s_isBlinn = !s_isBlinn;
+				cout << (s_isBlinn ? "Blinn-Phong" : "Phong") << endl;
+			}
 		};
+
+		s_onKeyClickEvent = [](int key) -> void {
+			switch (key)
+			{
+				case GLFW_KEY_C:
+				{
+					changeEnvFile();
+					s_isBreakLoop = true;
+				}
+			}
+		};
+
+		if (s_isBreakLoop)
+		{
+			break;
+		}
 
 		// Render
 		// ------------------------------
@@ -274,6 +291,17 @@ int main()
 		}
 	}
 
+}
+
+int main()
+{
+	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
+	if (window == nullptr) return -1;
+
+	while (!glfwWindowShouldClose(window))
+	{
+		startApp(window, s_currentEnvFile);
+	}
 
 	// glfw: terminate, clearing all previously allocated GLFW resource.
 	glfwTerminate();
