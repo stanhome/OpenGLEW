@@ -222,7 +222,7 @@ int main()
 	SphereMesh sphere;
 
 	pbrShader.use();
-	pbrShader.setVec3("albedo", 0.5f, 0.01f, 0.01f);
+	pbrShader.setVec3("albedo", 0.5f, 0.0f, 0.0f);
 	pbrShader.setFloat("ao", 1.0f);
 	pbrShader.setInt("irradianceMap", 0);
 	pbrShader.setInt("prefilterMap", 1);
