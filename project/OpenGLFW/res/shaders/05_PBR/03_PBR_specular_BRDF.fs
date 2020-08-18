@@ -23,7 +23,7 @@ vec3 importanceSampleGGX(vec2 xi, vec3 n, float roughness) {
 	float a = roughness * roughness;
 	float a2 = a * a;
 	float phi = 2.0 * PI * xi.x;
-	float cosTheat = sqrt(1.0 - xi.y) / (1.0 + (a2 - 1.0) * xi.y);
+	float cosTheat = sqrt((1.0 - xi.y) / (1.0 + (a2 - 1.0) * xi.y));
 	float sinTheat = sqrt(1.0 - cosTheat * cosTheat);
 
 	// from spherical coordinates to cartesian coordinates - halfway vector
