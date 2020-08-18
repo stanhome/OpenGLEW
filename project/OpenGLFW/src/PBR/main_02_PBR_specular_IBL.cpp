@@ -15,18 +15,14 @@ using namespace std;
 static bool s_isBlinn = false;
 static bool s_isBlinnKeyPressed = false;
 
-int main()
-{
-	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
-	if (window == nullptr) return -1;
-
+void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_FRONT);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL); // set depth function to less than AND equal for skybox depth trick.
-	// enable seamless cubemap sampling for lower mip levels in the pre-filter map.
-	// 解决 cubemap 两个面之间的接缝问题
+							// enable seamless cubemap sampling for lower mip levels in the pre-filter map.
+							// 解决 cubemap 两个面之间的接缝问题
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	Shader pbrShader(SHADER_PATH("03_PBR_direction_and_indirection_lighting.vs"), SHADER_PATH("03_PBR_direction_and_indirection_lighting.fs"));
@@ -51,7 +47,7 @@ int main()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
 	// PBR:load the HDR environment map
-	Texture hdrRectangularMap(GL_TEXTURE_2D, "res/imgs/hdr/Newport_Loft_Ref.hdr");
+	Texture hdrRectangularMap(GL_TEXTURE_2D, environmentMapFilepath);
 	hdrRectangularMap.setSamplerName("equirectangularMap", 0);
 
 	// PBR:setup cubemap to render to and attach to framebuffer
@@ -259,6 +255,19 @@ int main()
 	glfwGetFramebufferSize(window, &scrW, &scrH);
 	glViewport(0, 0, scrW, scrH);
 
+	// process key click event
+	bool isBreakRenderLoop = false;
+	s_onKeyClickEvent = [&isBreakRenderLoop](int key) -> void {
+		switch (key)
+		{
+		case GLFW_KEY_C:
+		{
+			changeEnvFile();
+			isBreakRenderLoop = true;
+		}
+		}
+	};
+
 	// RENDER loop
 	while (!glfwWindowShouldClose(window)) {
 		// pre-frame time logic
@@ -271,25 +280,16 @@ int main()
 		//input
 		// ------------------------------
 		processInput(window);
-		s_processInputFunc = [](GLFWwindow * w) -> void {
-			//if (glfwGetKey(w, GLFW_KEY_B) == GLFW_PRESS)
-			//{
-			//	s_isBlinnKeyPressed = true;
-			//}
-
-			//if (s_isBlinnKeyPressed && glfwGetKey(w, GLFW_KEY_B) == GLFW_RELEASE) {
-			//	s_isBlinnKeyPressed = false;
-			//	s_isBlinn = !s_isBlinn;
-			//	cout << (s_isBlinn ? "Blinn-Phong" : "Phong") << endl;
-			//}
-		};
+		if (isBreakRenderLoop)
+		{
+			break;
+		}
 
 		// Render
 		// ------------------------------
 		// do Rendering
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 		// pass the light properties
 		for (unsigned int i = 0; i < lightCount; ++i)
@@ -369,7 +369,17 @@ int main()
 			glfwPollEvents();
 		}
 	}
+}
 
+int main()
+{
+	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
+	if (window == nullptr) return -1;
+
+	while (!glfwWindowShouldClose(window))
+	{
+		startApp(window, s_currentEnvFile);
+	}
 
 	// glfw: terminate, clearing all previously allocated GLFW resource.
 	glfwTerminate();
