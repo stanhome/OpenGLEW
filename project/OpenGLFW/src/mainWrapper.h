@@ -203,20 +203,20 @@ void processInput(GLFWwindow *window) {
 	if (s_onKeyClickEvent)
 	{
 		// handle key click event
-		for (int key = GLFW_KEY_A; key <= GLFW_KEY_Z; key++)
+		for (int key = GLFW_KEY_SPACE; key <= GLFW_KEY_LAST; key++)
 		{
 			if (glfwGetKey(window, key) == GLFW_PRESS) s_keyPressedMap[key] = true;
 		}
 
-		for (int key = GLFW_KEY_A; key <= GLFW_KEY_Z; key++)
+		for (auto keyIter = s_keyPressedMap.begin(); keyIter != s_keyPressedMap.end(); ++keyIter)
 		{
-			auto keyIter = s_keyPressedMap.find(key);
-			if (keyIter != s_keyPressedMap.end() && keyIter->second == true && glfwGetKey(window, key) == GLFW_RELEASE)
+			if (keyIter->second == true && glfwGetKey(window, keyIter->first) == GLFW_RELEASE)
 			{
 				keyIter->second = false;
-				(s_onKeyClickEvent)(key);
+				(s_onKeyClickEvent)(keyIter->first);
 			}
 		}
+
 	}
 }
 

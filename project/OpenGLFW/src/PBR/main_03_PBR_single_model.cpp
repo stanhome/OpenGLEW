@@ -38,6 +38,7 @@ public:
 
 	float rotateDegree = 90.f;
 	float rotateSpeed = -.1f;
+	bool isRotated = true;
 
 	void init() {
 		texNormal = new Texture(GL_TEXTURE_2D, "res/objects/Cerberus/Textures/Cerberus_N.tga");
@@ -45,9 +46,16 @@ public:
 		texRoughness = new Texture(GL_TEXTURE_2D, "res/objects/Cerberus/Textures/Cerberus_R.tga");
 	}
 
+	void switchRotate() {
+		isRotated = !isRotated;
+	}
+
 	void update() {
-		float dt = s_deltaTime;
-		rotateDegree += rotateSpeed * dt;
+		if (isRotated)
+		{
+			float dt = s_deltaTime;
+			rotateDegree += rotateSpeed * dt;
+		}
 	}
 
 	void draw(Shader &shader) {
@@ -313,10 +321,14 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	s_onKeyClickEvent = [&isBreakRenderLoop](int key) -> void {
 		switch (key)
 		{
-		case GLFW_KEY_C:
-		{
+		case GLFW_KEY_C: {
 			changeEnvFile();
 			isBreakRenderLoop = true;
+			break;
+		}
+		case GLFW_KEY_SPACE: {
+			GameObject::instance->switchRotate();
+			break;
 		}
 		}
 	};
