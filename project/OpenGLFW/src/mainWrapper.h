@@ -223,6 +223,7 @@ void processInput(GLFWwindow *window) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // changed environment map file logic.
 static const char *s_envFileArr[] = {
+	"res/imgs/hdr/Circus_Backstage_3k.hdr",
 	"res/imgs/hdr/Newport_Loft_Ref.hdr",
 	"res/imgs/hdr/Factory_Catwalk_2k.hdr",
 	"res/imgs/hdr/Theatre-Side_2k.hdr",
