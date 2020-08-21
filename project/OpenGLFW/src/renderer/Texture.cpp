@@ -76,23 +76,34 @@ void Texture::load(const std::string &filePath)
 
 		if (data.isHDR)
 		{
+			GLenum format, dstFormat;
+			switch (data.channel)
+			{
+			case 1: format = GL_RED; dstFormat = GL_RED; break;
+			case 3: format = GL_RGB16F; dstFormat = GL_RGB; break;
+			default: break;
+			}
+
 			// hdr format
-			glTexImage2D(_target, 0, GL_RGB16F, data.width, data.height, 0, GL_RGB, GL_FLOAT, data.data);
+			glTexImage2D(_target, 0, format, data.width, data.height, 0, dstFormat, GL_FLOAT, data.data);
 			break;
 		}
 
-		// common format
-		GLenum format;
-		switch (data.channel)
 		{
-		case 1: format = GL_RED; break;
-		case 3: format = GL_RGB; break;
-		case 4: format = GL_RGBA; break;
-		default: break;
+			// common format
+			GLenum format;
+			switch (data.channel)
+			{
+			case 1: format = GL_RED; break;
+			case 3: format = GL_RGB; break;
+			case 4: format = GL_RGBA; break;
+			default: break;
+			}
+
+			glTexImage2D(_target, 0, format, data.width, data.height, 0, format, GL_UNSIGNED_BYTE, data.data);
+			glGenerateMipmap(_target);
 		}
 
-		glTexImage2D(_target, 0, format, data.width, data.height, 0, format, GL_UNSIGNED_BYTE, data.data);
-		glGenerateMipmap(_target);
 
 		break;
 	} while (true);

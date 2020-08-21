@@ -32,7 +32,7 @@ float getNewY(float xDiff) {
 class GameObject {
 public:
 	GameObject() {
-		obj = new Model("res/objects/Cerberus/Cerberus_LP.FBX");
+		obj = new Model("res/objects/cylinder.obj");
 	}
 
 	~GameObject() {
@@ -42,21 +42,22 @@ public:
 		delete texRoughness;
 	}
 
-	static GameObject *instance;
-
 	Model *obj = nullptr;
+	Texture *texAlbedo = nullptr;
 	Texture *texNormal = nullptr;
 	Texture *texMetallic = nullptr;
 	Texture *texRoughness = nullptr;
 
 	float rotateDegree = 90.f;
 	float rotateSpeed = -.1f;
-	bool isRotated = true;
+	bool isRotated = false;
 
 	void init() {
-		texNormal = new Texture(GL_TEXTURE_2D, "res/objects/Cerberus/Textures/Cerberus_N.tga");
-		texMetallic = new Texture(GL_TEXTURE_2D, "res/objects/Cerberus/Textures/Cerberus_M.tga");
-		texRoughness = new Texture(GL_TEXTURE_2D, "res/objects/Cerberus/Textures/Cerberus_R.tga");
+		texAlbedo = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/d.png");
+		texAlbedo->setSamplerName("tex_diffuse", 0);
+		texNormal = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/n.png");
+		texMetallic = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/m.png");
+		texRoughness = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/r.png");
 	}
 
 	void switchRotate() {
@@ -72,6 +73,7 @@ public:
 	}
 
 	void draw(Shader &shader) {
+		texAlbedo->bind(GL_TEXTURE0);
 		texNormal->bind(GL_TEXTURE1);
 		texMetallic->bind(GL_TEXTURE2);
 		texRoughness->bind(GL_TEXTURE3);
@@ -80,8 +82,8 @@ public:
 	}
 };
 
-GameObject *GameObject::instance = nullptr;
 
+GameObject *s_obj = nullptr;
 
 void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	//glEnable(GL_CULL_FACE);
@@ -292,6 +294,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	pbrShader.setFloat("ao", 1.0f);
 
 	// GL_TEXTURE0 is albedo map
+	pbrShader.setInt("tex_diffuse0", 0);
 	pbrShader.setInt("normalMap", 1);
 	pbrShader.setInt("metallicMap", 2);
 	pbrShader.setInt("roughnessMap", 3);
@@ -346,7 +349,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 			break;
 		}
 		case GLFW_KEY_SPACE: {
-			GameObject::instance->switchRotate();
+			s_obj->switchRotate();
 			break;
 		}
 		}
@@ -416,19 +419,19 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 		glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
 		// render row * column number of spheres with varying metallic/roughness values scaled by rows and columns respectively.
-		GameObject::instance->update();
+		s_obj->update();
 
 		glm::mat4 M = glm::mat4(1.0f);
 
 		M = glm::mat4(1.0f);
-		float sclae = 0.1f;
+		float sclae = 2.0f;
 		M = glm::scale(M, glm::vec3(sclae, sclae, sclae));
-		M = glm::rotate(M, -90.0f, V::left);
-		M = glm::rotate(M, GameObject::instance->rotateDegree, V::forward);
+		//M = glm::rotate(M, -90.0f, V::left);
+		M = glm::rotate(M, s_obj->rotateDegree, V::up);
 		pbrShader.setMat4("M", M);
 
 		//sphere.draw(pbrShader);
-		GameObject::instance->draw(pbrShader);
+		s_obj->draw(pbrShader);
 
 		// render skybox
 		skyboxShader.use();
@@ -459,8 +462,8 @@ int main()
 	GLFWwindow *window = createWindow(WIDTH, HEIGHT);
 	if (window == nullptr) return -1;
 
-	GameObject::instance = new GameObject();
-	GameObject::instance->init();
+	s_obj = new GameObject();
+	s_obj->init();
 
 	while (!glfwWindowShouldClose(window))
 	{
