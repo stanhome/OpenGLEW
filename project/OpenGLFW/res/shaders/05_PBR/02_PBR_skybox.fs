@@ -6,9 +6,10 @@ in VS_OUT {
 } fs_in;
 
 uniform samplerCube environmentMap;
+uniform float colorScale = 1.0f;
 
 void main() {
-	vec3 envColor = texture(environmentMap, fs_in.worldPos).rgb;
+	vec3 envColor = texture(environmentMap, fs_in.worldPos).rgb * colorScale;
 
 	// HDR tonemap and gamma correct
 	envColor = envColor / (envColor + vec3(1.0));
