@@ -15,6 +15,19 @@ using namespace std;
 static bool s_isBlinn = false;
 static bool s_isBlinnKeyPressed = false;
 
+static float s_ao = 1.0f;
+static float s_speedX = std::pow(2 * s_ao, 1 / 2.2);
+const float AO_SPEED = 0.01f;
+
+float getNewY(float xDiff) {
+	s_speedX += xDiff;
+	s_speedX = std::max(s_speedX, .0f);
+
+	float y = s_speedX > 1 ? s_speedX : std::pow(s_speedX, 2.2);
+
+	return y * 0.5;
+}
+
 
 class GameObject {
 public:
@@ -305,6 +318,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 		glm::vec3(300.0f, 300.0f, 300.0f)
 	};
 	int lightCount = sizeof(lightPosArr) / sizeof(lightPosArr[0]);
+	lightCount = 0; // for only show indirection light;
 
 	glm::mat4 matProjection = glm::perspective(glm::radians(camera.fov), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	skyboxShader.use();
@@ -326,11 +340,21 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 			isBreakRenderLoop = true;
 			break;
 		}
+		case GLFW_KEY_R: {
+			s_ao = 1.0f;
+			s_speedX = std::pow(2 * s_ao, 1 / 2.2);
+			break;
+		}
 		case GLFW_KEY_SPACE: {
 			GameObject::instance->switchRotate();
 			break;
 		}
 		}
+	};
+
+	s_processInputFunc = [](GLFWwindow *window) -> void {
+		if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS) { s_ao = getNewY(-AO_SPEED); }
+		if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) { s_ao = getNewY(AO_SPEED); }
 	};
 
 	// RENDER loop
@@ -381,6 +405,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 		glm::mat4 matVP = matProjection * camera.getViewMatrix();
 		pbrShader.setMat4("VP", matVP);
 		pbrShader.setVec3("viewPos", camera.pos);
+		pbrShader.setFloat("ao", s_ao);
 
 		// bind pre-computed IBL data
 		glActiveTexture(GL_TEXTURE5);
@@ -408,6 +433,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 		// render skybox
 		skyboxShader.use();
 		skyboxShader.setMat4("V", camera.getViewMatrix());
+		skyboxShader.setFloat("colorScale", s_ao);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 		//glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap); // display irradiance map
