@@ -14,6 +14,9 @@
 #include "renderer/Camera.h"
 #include "renderer/Model.h"
 
+#include "common/log.h"
+#include "renderer/fonts/ShowInfo.h"
+
 // settings
 const int WIDTH = 1280;
 const int HEIGHT = 720;
@@ -72,6 +75,7 @@ void configOpenglGlobalState() {
 }
 
 GLFWwindow *createWindow(int w, int h) {
+	Log::instance()->d("init begin, createWindow...");
 	Texture::initStbi();
 
 	glfwInit();
@@ -109,7 +113,6 @@ GLFWwindow *createWindow(int w, int h) {
 	// tel GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-
 	// init GLAD
 	// GLFW gives us glfwGetProcAddress that defines the correct function based on which OS we're compiling for
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -124,9 +127,13 @@ GLFWwindow *createWindow(int w, int h) {
 	glViewport(0, 0, width, height);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-
-
 	configOpenglGlobalState();
+
+	show::ShowInfo::instance()->init(0, height - 10);
+	show::ShowInfo::instance()->onScreenChangeSize(width, height);
+	show::ShowInfo::instance()->setContent("FPS:60");
+
+	Log::instance()->d("init done, createWindow end.");
 
 	return window;
 }
@@ -135,6 +142,8 @@ GLFWwindow *createWindow(int w, int h) {
 // event callback
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
+
+	show::ShowInfo::instance()->onScreenChangeSize(width, height);
 }
 
 // key event method 2.

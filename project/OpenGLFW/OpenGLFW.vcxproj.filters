@@ -34,6 +34,15 @@
     <Filter Include="src\renderer\mesh">
       <UniqueIdentifier>{0c0eec66-9acc-4eb4-b7ec-59a4a4c28e9b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\sh">
+      <UniqueIdentifier>{c2c466c2-dfcc-429d-9718-d29bd0ed883c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\sh\samples">
+      <UniqueIdentifier>{ac327f2e-af9c-40e1-bc53-222359320627}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\renderer\fonts">
+      <UniqueIdentifier>{6b9f37de-83d1-4810-bd28-0741602db099}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c">
@@ -60,8 +69,32 @@
     <ClCompile Include="src\renderer\SphereMesh.cpp">
       <Filter>src\renderer\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\PBR\main_03_PBR_single_model.cpp">
+    <ClCompile Include="src\sh\samples\sh.cpp">
+      <Filter>src\sh\samples</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sh\samples\sample.cpp">
+      <Filter>src\sh\samples</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\log.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sh\main_sh_demo.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\fonts\ShowInfo.cpp">
+      <Filter>src\renderer\fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\fonts\ShowInfoRender.cpp">
+      <Filter>src\renderer\fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\fonts\ShowTextureAtlas.cpp">
+      <Filter>src\renderer\fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\fonts\tgalib.cpp">
+      <Filter>src\renderer\fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\commonDefine.cpp">
+      <Filter>src\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +139,33 @@
     </ClInclude>
     <ClInclude Include="src\renderer\SphereMesh.h">
       <Filter>src\renderer\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sh\samples\sh.h">
+      <Filter>src\sh\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sh\samples\sample.h">
+      <Filter>src\sh\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\log.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\fonts\ShowComman.h">
+      <Filter>src\renderer\fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\fonts\ShowInfo.h">
+      <Filter>src\renderer\fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\fonts\ShowInfoRender.h">
+      <Filter>src\renderer\fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\fonts\ShowTextureAtlas.h">
+      <Filter>src\renderer\fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\fonts\stypes.h">
+      <Filter>src\renderer\fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\fonts\tgalib.h">
+      <Filter>src\renderer\fonts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

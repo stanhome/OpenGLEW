@@ -5,7 +5,7 @@
 
 static const char*s_pwd;
 
-std::string getFullPath(const char *path)
+static std::string getFullPath(const char *path)
 {
 	if (s_pwd == NULL)
 	{

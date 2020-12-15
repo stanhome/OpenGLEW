@@ -20,30 +20,47 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\deps\glad.c" />
-    <ClCompile Include="src\PBR\main_03_PBR_single_model.cpp" />
+    <ClCompile Include="src\common\commonDefine.cpp" />
+    <ClCompile Include="src\common\log.cpp" />
     <ClCompile Include="src\renderer\CubeMesh.cpp" />
+    <ClCompile Include="src\renderer\fonts\ShowInfo.cpp" />
+    <ClCompile Include="src\renderer\fonts\ShowInfoRender.cpp" />
+    <ClCompile Include="src\renderer\fonts\ShowTextureAtlas.cpp" />
+    <ClCompile Include="src\renderer\fonts\tgalib.cpp" />
     <ClCompile Include="src\renderer\Mesh.cpp" />
     <ClCompile Include="src\renderer\Model.cpp" />
     <ClCompile Include="src\renderer\PlaneMesh.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
     <ClCompile Include="src\renderer\SphereMesh.cpp" />
     <ClCompile Include="src\renderer\Texture.cpp" />
+    <ClCompile Include="src\sh\main_sh_demo.cpp" />
+    <ClCompile Include="src\sh\samples\sample.cpp" />
+    <ClCompile Include="src\sh\samples\sh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\include\glad\glad.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3.h" />
     <ClInclude Include="..\third-party\include\GLFW\glfw3native.h" />
     <ClInclude Include="src\common\commonDefine.h" />
+    <ClInclude Include="src\common\log.h" />
     <ClInclude Include="src\common\utils.h" />
     <ClInclude Include="src\mainWrapper.h" />
     <ClInclude Include="src\renderer\Camera.h" />
     <ClInclude Include="src\renderer\CubeMesh.h" />
+    <ClInclude Include="src\renderer\fonts\ShowComman.h" />
+    <ClInclude Include="src\renderer\fonts\ShowInfo.h" />
+    <ClInclude Include="src\renderer\fonts\ShowInfoRender.h" />
+    <ClInclude Include="src\renderer\fonts\ShowTextureAtlas.h" />
+    <ClInclude Include="src\renderer\fonts\stypes.h" />
+    <ClInclude Include="src\renderer\fonts\tgalib.h" />
     <ClInclude Include="src\renderer\Mesh.h" />
     <ClInclude Include="src\renderer\Model.h" />
     <ClInclude Include="src\renderer\PlaneMesh.h" />
     <ClInclude Include="src\renderer\Shader.h" />
     <ClInclude Include="src\renderer\SphereMesh.h" />
     <ClInclude Include="src\renderer\Texture.h" />
+    <ClInclude Include="src\sh\samples\sample.h" />
+    <ClInclude Include="src\sh\samples\sh.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{173F0096-91E5-4C70-A5BF-19DA9C174C0B}</ProjectGuid>
@@ -107,7 +124,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessToFile>false</PreprocessToFile>
-      <PreprocessorDefinitions>_LOG_=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -128,6 +145,7 @@ xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +156,7 @@ xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessToFile>false</PreprocessToFile>
-      <PreprocessorDefinitions>_LOG_=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -163,6 +181,7 @@ xcopy /Y /Q /S "$(SolutionDir)OpenGLFW\res\*.*" "$(OutDir)res\"
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
