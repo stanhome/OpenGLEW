@@ -425,7 +425,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 
 		M = glm::mat4(1.0f);
 		float sclae = 2.0f;
-		M = glm::scale(M, glm::vec3(sclae, sclae, sclae));
+		M = glm::scale(M, glm::vec3(sclae, 1.0, sclae));
 		//M = glm::rotate(M, -90.0f, V::left);
 		M = glm::rotate(M, s_obj->rotateDegree, V::up);
 		pbrShader.setMat4("M", M);
