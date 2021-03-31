@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include "mainWrapper.h"
 #include "renderer/CubeMesh.h"
@@ -82,6 +83,20 @@ public:
 	}
 };
 
+glm::vec3 s_shCoefs[9];
+
+void loadSHCoef() {
+	const string filePath = "res/harmonics/coef2.txt";
+	ifstream ifs(filePath);
+	if (!ifs) throw runtime_error("open " + filePath + " falied");
+	int i = 0;
+	float r, g, b;
+	while (ifs >> r >> g >> b) {
+		s_shCoefs[i] = glm::vec3(r, g, b);
+		++i;
+	}
+}
+
 
 GameObject *s_obj = nullptr;
 
@@ -95,7 +110,7 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 							// 解决 cubemap 两个面之间的接缝问题
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture.fs"));
+	Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture_sh9.fs"));
 	Shader rectangularToCubemapShader(SHADER_PATH("02_PBR_cubemap.vs"), SHADER_PATH("02_PBR_rectangularToCubemap.fs"));
 	Shader lampShader("res/shaders/02_lighting/01_lamp.vs", "res/shaders/02_lighting/01_lamp.fs");
 	Shader skyboxShader(SHADER_PATH("02_PBR_skybox.vs"), SHADER_PATH("02_PBR_skybox.fs"));
@@ -103,6 +118,9 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	// for indirection specular Light
 	Shader prefilterShader(SHADER_PATH("02_PBR_cubemap.vs"), SHADER_PATH("03_PBR_specular_prefilter_convolution.fs"));
 	Shader brdfShader(SHADER_PATH("03_PBR_specular_BRDF.vs"), SHADER_PATH("03_PBR_specular_BRDF.fs"));
+
+	// load Sphere Harmonics 9 coefs
+	loadSHCoef();
 
 	// step 1 convert equi-rectangular map to Cubemap
 	// PBR:setup framebuffer
@@ -302,6 +320,8 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 	pbrShader.setInt("irradianceMap", 5);
 	pbrShader.setInt("prefilterMap", 6);
 	pbrShader.setInt("brdfLUT", 7);
+
+	pbrShader.setVec3Arr("shCoefs", 9, s_shCoefs[0]);
 
 	skyboxShader.use();
 	skyboxShader.setInt("environmentMap", 0);
