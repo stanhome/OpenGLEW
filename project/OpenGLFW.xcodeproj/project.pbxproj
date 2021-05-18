@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F671020626535E31007D218D /* main_03.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F671020526535E31007D218D /* main_03.cpp */; };
 		F671020D26536833007D218D /* commonDefine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F671020926536833007D218D /* commonDefine.cpp */; };
 		F671020E26536833007D218D /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F671020A26536833007D218D /* log.cpp */; };
 		F671022A2653693E007D218D /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67102102653693D007D218D /* Mesh.cpp */; };
@@ -25,6 +24,7 @@
 		F671023C26539897007D218D /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F671023B26539897007D218D /* libglfw.3.3.dylib */; };
 		F671024026539E2C007D218D /* libassimp.5.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F671023D26539E2C007D218D /* libassimp.5.0.0.dylib */; };
 		F67102442653A4A9007D218D /* res in CopyFiles */ = {isa = PBXBuildFile; fileRef = F67102432653A430007D218D /* res */; };
+		F67102462653AEB5007D218D /* main_sh_demo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67102452653AEB5007D218D /* main_sh_demo.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,7 +42,6 @@
 
 /* Begin PBXFileReference section */
 		F6220ADD26535D3D0046C9DB /* OpenGLFW */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenGLFW; sourceTree = BUILT_PRODUCTS_DIR; };
-		F671020526535E31007D218D /* main_03.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_03.cpp; path = src/basicSample/main_03.cpp; sourceTree = "<group>"; };
 		F671020826536833007D218D /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		F671020926536833007D218D /* commonDefine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = commonDefine.cpp; sourceTree = "<group>"; };
 		F671020A26536833007D218D /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log.cpp; sourceTree = "<group>"; };
@@ -79,6 +78,7 @@
 		F671023E26539E2C007D218D /* libassimp.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.5.dylib; path = "third-party/libs/mac/libassimp.5.dylib"; sourceTree = "<group>"; };
 		F671023F26539E2C007D218D /* libassimp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.dylib; path = "third-party/libs/mac/libassimp.dylib"; sourceTree = "<group>"; };
 		F67102432653A430007D218D /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = res; path = OpenGLFW/res; sourceTree = "<group>"; };
+		F67102452653AEB5007D218D /* main_sh_demo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_sh_demo.cpp; path = src/sh/main_sh_demo.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,9 +116,9 @@
 		F6220ADF26535D3D0046C9DB /* OpenGLFW */ = {
 			isa = PBXGroup;
 			children = (
+				F67102452653AEB5007D218D /* main_sh_demo.cpp */,
 				F671020F2653693D007D218D /* renderer */,
 				F671020726536833007D218D /* common */,
-				F671020526535E31007D218D /* main_03.cpp */,
 			);
 			path = OpenGLFW;
 			sourceTree = "<group>";
@@ -245,7 +245,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F671020E26536833007D218D /* log.cpp in Sources */,
-				F671020626535E31007D218D /* main_03.cpp in Sources */,
 				F67102322653693E007D218D /* tgalib.cpp in Sources */,
 				F671022B2653693E007D218D /* PlaneMesh.cpp in Sources */,
 				F67102342653693E007D218D /* ShowInfo.cpp in Sources */,
@@ -256,6 +255,7 @@
 				F671022D2653693E007D218D /* Shader.cpp in Sources */,
 				F671022A2653693E007D218D /* Mesh.cpp in Sources */,
 				F67102332653693E007D218D /* ShowTextureAtlas.cpp in Sources */,
+				F67102462653AEB5007D218D /* main_sh_demo.cpp in Sources */,
 				F67102302653693E007D218D /* Model.cpp in Sources */,
 				F671020D26536833007D218D /* commonDefine.cpp in Sources */,
 				F671022F2653693E007D218D /* CubeMesh.cpp in Sources */,
