@@ -19,20 +19,9 @@ Note: showInfo common headers.
 #endif
 
 #else
-#ifdef __ANDROID__
-#include <GLES/gl.h>
-#elif __APPLE__
-#ifdef _EDITOR
-#import <GLFW/glfw3.h>
-#else
-#import <OpenGLES/ES1/gl.h>
-#import <OpenGLES/ES1/glext.h>
-#endif // _EDITOR
 
-#else
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#endif
 #endif
 
 #include "common/log.h"

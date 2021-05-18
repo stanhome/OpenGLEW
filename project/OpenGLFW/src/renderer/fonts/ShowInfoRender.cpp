@@ -14,10 +14,11 @@ using namespace std;
 
 namespace show {
 
-#define MULTILINE(...) #__VA_ARGS__
+//#define MULTILINE(...) #__VA_ARGS__
+#define MULTILINE(...) R"(__VA_ARGS__)"
 
 static const char *VS = MULTILINE(
-#version 330 core\n
+##version 330 core\n
 layout (location = 0) in vec2 a_position;
 layout (location = 1) in vec2 a_texCoord;
 
@@ -32,7 +33,7 @@ void main()
 });
 
 static const char *FS = MULTILINE(
-#version 330 core\n
+##version 330 core\n
 in vec2 v_texCoord;
 
 out vec4 FragColor;

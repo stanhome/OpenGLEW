@@ -1,8 +1,7 @@
-﻿#include <string>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <io.h> // for C
 
 #include "Shader.h"
 #include "common/utils.h"
@@ -113,7 +112,7 @@ string Shader::readShaderSrc(const char *path) const
 	try
 	{
 		// 00 -- check file is exist.
-		if (_access(path, 0) == -1) {
+		if (access(path, 0) == -1) {
 			cout << "[E] shader file not found, path:" << path << endl;
 
 			return ret;

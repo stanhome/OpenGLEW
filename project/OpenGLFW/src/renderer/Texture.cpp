@@ -1,8 +1,7 @@
-﻿#include <string>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <io.h> // for C
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

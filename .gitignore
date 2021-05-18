@@ -39,3 +39,6 @@ Release/
 *.exe
 *.out
 *.app
+
+.DS_Store
+xcuserdata

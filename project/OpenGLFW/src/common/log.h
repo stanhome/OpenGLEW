@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <stdio.h>
 
@@ -14,7 +14,7 @@ protected:
 	}
 
 	Log(const Log &copy){}
-	Log &operator=(const Log &){}
+    Log &operator=(const Log &rhs){ return *this;}
 
 public:
 	static Log *instance() {

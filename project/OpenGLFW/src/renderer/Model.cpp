@@ -1,8 +1,8 @@
-﻿#include <string>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <io.h> // for C
+
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
