@@ -3,6 +3,12 @@
 #include <sstream>
 #include <iostream>
 
+#ifdef __APPLE__
+#else
+#include <io.h> // for C
+#endif
+
+
 #include "Shader.h"
 #include "common/utils.h"
 
@@ -112,7 +118,12 @@ string Shader::readShaderSrc(const char *path) const
 	try
 	{
 		// 00 -- check file is exist.
-		if (access(path, 0) == -1) {
+#ifdef __APPLE__
+		bool isExist = access(path, 0);
+#else
+		bool isExist = _access(path, 0);
+#endif
+		if (isExist == -1) {
 			cout << "[E] shader file not found, path:" << path << endl;
 
 			return ret;
