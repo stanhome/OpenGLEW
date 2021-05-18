@@ -278,8 +278,8 @@ void STextureAtlas::drawQuads(size_t start, size_t count)
 
 
 	// clean up
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+//    glDisableVertexAttribArray(0);
+//    glDisableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
