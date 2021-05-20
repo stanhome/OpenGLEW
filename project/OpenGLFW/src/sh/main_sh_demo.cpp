@@ -54,11 +54,14 @@ public:
 	bool isRotated = false;
 
 	void init() {
-		texAlbedo = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/d.png");
+		//const std::string IMG_FOLDER = "res/imgs/cylinder/8/";
+		const std::string IMG_FOLDER = "res/imgs/cylinder/26/";
+
+		texAlbedo = new Texture(GL_TEXTURE_2D, IMG_FOLDER + "d.png");
 		texAlbedo->setSamplerName("tex_diffuse", 0);
-		texNormal = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/n.png");
-		texMetallic = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/m.png");
-		texRoughness = new Texture(GL_TEXTURE_2D, "res/imgs/cylinder/8/r.png");
+		texNormal = new Texture(GL_TEXTURE_2D, IMG_FOLDER + "n.png");
+		texMetallic = new Texture(GL_TEXTURE_2D, IMG_FOLDER + "m.png");
+		texRoughness = new Texture(GL_TEXTURE_2D, IMG_FOLDER + "r.png");
 	}
 
 	void switchRotate() {
@@ -110,7 +113,8 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 							// 解决 cubemap 两个面之间的接缝问题
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture_sh9.fs"));
+	Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture.fs"));
+	//Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture_sh9.fs"));
 	Shader rectangularToCubemapShader(SHADER_PATH("02_PBR_cubemap.vs"), SHADER_PATH("02_PBR_rectangularToCubemap.fs"));
 	Shader lampShader("res/shaders/02_lighting/01_lamp.vs", "res/shaders/02_lighting/01_lamp.fs");
 	Shader skyboxShader(SHADER_PATH("02_PBR_skybox.vs"), SHADER_PATH("02_PBR_skybox.fs"));

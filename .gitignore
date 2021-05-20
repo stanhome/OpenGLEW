@@ -42,3 +42,5 @@ Release/
 
 .DS_Store
 xcuserdata
+
+**/out.log
