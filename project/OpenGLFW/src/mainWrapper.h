@@ -18,8 +18,8 @@
 #include "renderer/fonts/ShowInfo.h"
 
 // settings
-const int WIDTH = 1280;
-const int HEIGHT = 720;
+const int WIDTH = 1920;
+const int HEIGHT = 1080;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
 double s_lastX, s_lastY;
