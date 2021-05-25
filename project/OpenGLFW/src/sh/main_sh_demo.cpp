@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <sstream>
 #include <fstream>
 
@@ -89,7 +89,7 @@ public:
 glm::vec3 s_shCoefs[9];
 
 void loadSHCoef() {
-	const string filePath = "res/harmonics/coef2.txt";
+	const string filePath = "res/harmonics/coef2-QueenMary_Chimney_Ref.txt";
 	ifstream ifs(filePath);
 	if (!ifs) throw runtime_error("open " + filePath + " falied");
 	int i = 0;
@@ -113,8 +113,8 @@ void startApp(GLFWwindow *window, const std::string &environmentMapFilepath) {
 							// 解决 cubemap 两个面之间的接缝问题
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture.fs"));
-	//Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture_sh9.fs"));
+//	Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture.fs"));
+	Shader pbrShader(SHADER_PATH("04_PBR_with_texture.vs"), SHADER_PATH("04_PBR_with_texture_sh9.fs"));
 	Shader rectangularToCubemapShader(SHADER_PATH("02_PBR_cubemap.vs"), SHADER_PATH("02_PBR_rectangularToCubemap.fs"));
 	Shader lampShader("res/shaders/02_lighting/01_lamp.vs", "res/shaders/02_lighting/01_lamp.fs");
 	Shader skyboxShader(SHADER_PATH("02_PBR_skybox.vs"), SHADER_PATH("02_PBR_skybox.fs"));
