@@ -15,7 +15,7 @@ if not os.path.exists("output"):
     os.mkdir("output")
 
 print("reading cubemap ...")
-path = "../documents/PBR-SH"
+path = "../documents/PBR-SH2"
 cube = Cubemap(path)
 img = cube.GenExpandImage(256)
 cv2.imwrite("output/cube.jpg", img)
